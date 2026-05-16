@@ -192,18 +192,6 @@ a:focus {
   height: auto;
 }
 
-.custom_nav-container .navbar-toggler {
-  outline: none;
-  border: none;
-}
-
-.custom_nav-container .navbar-toggler .navbar-toggler-icon {
-  background-image: url(../images/menu.png);
-  background-size: 40px;
-  width: 30px;
-  height: 30px;
-}
-
 .lg_toggl-btn {
   background-color: transparent;
   border: none;
@@ -853,4 +841,49 @@ a:focus {
 }
 
 /* end footer section*/
+
+/* === BOOTSTRAP MENU FIX === */
+.navbar-toggler {
+  border: none !important;
+  padding: 4px 8px !important;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%280, 0, 0, 0.8%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+  width: 1.5em !important;
+  height: 1.5em !important;
+}
+
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none !important;
+  }
+  .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto !important;
+  }
+  .navbar-nav {
+    flex-direction: row !important;
+  }
+}
+
+@media (max-width: 991px) {
+  .navbar-collapse {
+    display: none !important;
+  }
+  .navbar-collapse.show {
+    display: block !important;
+  }
+  .navbar-toggler {
+    display: block !important;
+  }
+  .navbar-nav {
+    flex-direction: column !important;
+  }
+}
 /*# sourceMappingURL=style.css.map */
