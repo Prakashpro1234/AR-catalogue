@@ -2,36 +2,32 @@
   .slider_section .detail-box .btn-box a {
     margin-bottom: 10px;
   }
-
-  .slider_section .play_btn {
-    right: 25%;
-  }
 }
 
 @media (max-width: 992px) {
-  .navbar-toggler {
-    display: block !important;
-  }
-
-  .custom_menu-btn {
-    display: none !important;
-  }
-
   .header_section .user_option {
     display: none;
   }
 
   .navbar-collapse {
     background: #ffffff;
-    padding: 15px;
-    margin-top: 10px;
-    border-radius: 5px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-top: 15px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
   }
 
   .custom_nav-container.navbar-expand-lg .navbar-nav .nav-item .nav-link {
     color: #000000;
-    margin: 5px 0;
+    margin: 8px 0;
+    padding: 10px;
+  }
+
+  .custom_nav-container.navbar-expand-lg .navbar-nav .nav-item.active .nav-link,
+  .custom_nav-container.navbar-expand-lg .navbar-nav .nav-item:hover .nav-link {
+    color: #f0c40f;
+    background-color: #f9f9f9;
+    border-radius: 5px;
   }
 
   .brand_section .brand_container .box {
@@ -50,9 +46,13 @@
     display: none;
   }
 
+  .sub_page .hero_area {
+    background: #ffffff;
+  }
+
   .slider_section {
     text-align: center;
-    padding-top: 20px;
+    padding-top: 30px;
   }
 
   .slider_section .detail-box {
@@ -60,22 +60,24 @@
   }
 
   .slider_section .detail-box h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
     line-height: 1.2;
   }
 
   .slider_section .detail-box h1 span {
-    font-size: 2.5rem;
+    font-size: 2.3rem;
     color: #f0c40f;
   }
 
   .slider_section .btn-box {
     justify-content: center;
     flex-direction: column;
+    align-items: center;
   }
 
   .slider_section .btn-box a {
     margin: 5px 0;
+    width: 200px;
   }
 
   .slider_section .img-box {
@@ -132,8 +134,9 @@
     align-items: center;
   }
 
-  .trending_section .img_container .box.b-1 {
-    padding-top: 0;
+  .trending_section .img_container .box {
+    width: 100%;
+    margin: 10px 0;
   }
 
   .trending_section .tab_container .t-link-box hr {
@@ -179,23 +182,23 @@
 
 @media (max-width: 576px) {
   .slider_section .detail-box h1 {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
   }
 
   .slider_section .detail-box h1 span {
-    font-size: 2rem;
+    font-size: 1.9rem;
   }
 
   .heading_container h2 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .discount_section .detail-box h2 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .discount_section .detail-box h2.main_heading {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
   }
 
   .navbar-brand img {
@@ -214,15 +217,15 @@
 
 @media (max-width: 420px) {
   .slider_section .detail-box h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
   }
 
   .slider_section .detail-box h1 span {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
   }
 
   .heading_container h2 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
   }
 }
 
