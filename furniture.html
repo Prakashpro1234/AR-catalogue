@@ -31,7 +31,7 @@
 
 <body class="sub_page">
   <div class="hero_area">
-    <!-- header section starts -->
+<!-- header section starts -->
 <header class="header_section">
   <div class="container-fluid">
     <nav class="navbar navbar-expand-lg custom_nav-container">
@@ -54,8 +54,8 @@
           <li class="nav-item">
             <a class="nav-link" href="shop.html">Shop </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="furniture.html"> Products </a>
+          <li class="nav-item active">
+            <a class="nav-link" href="furniture.html"> Products <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
             <a class="nav-link" href="contact.html">Contact us</a>
@@ -337,7 +337,48 @@
     })
   </script>
 <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="js/bootstrap.js"></script>
+<script src="js/bootstrap.js"></script>
+<script>
+  // Product Search
+  document.getElementById('searchForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const products = document.querySelectorAll('#products-list .box, .brand_container .box');
+    if (products.length > 0) {
+      let found = false;
+      products.forEach(function(product) {
+        const productName = product.getAttribute('data-product-name');
+        if (!productName) return;
+        if (searchTerm === '' || productName.toLowerCase().includes(searchTerm)) {
+          product.style.display = 'block';
+          found = true;
+        } else {
+          product.style.display = 'none';
+        }
+      });
+      if (searchTerm !== '') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      if (!found && searchTerm !== '') {
+        alert('No products found matching "' + searchTerm + '"');
+        products.forEach(function(product) {
+          product.style.display = 'block';
+        });
+      }
+    }
+  });
+  
+  // Auto-search if URL has ?search= parameter
+  window.addEventListener('load', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchTerm = urlParams.get('search');
+    if (searchTerm) {
+      document.getElementById('searchInput').value = searchTerm;
+      document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+    }
+  });
+</script>
+</body>
 </body>
 
 </html>
