@@ -75,18 +75,16 @@ body {
   background-size: cover;
 }
 
+/* FIX: Sub pages should not be 100vh */
 .sub_page .hero_area {
   height: auto;
+  min-height: auto;  /* This is the key fix */
   background: #ffffff;
   background-image: none;
 }
 
 .sub_page .hero_area::after {
   display: none;
-}
-
-.hero_area.sub_pages {
-  height: auto;
 }
 
 .header_section {
@@ -215,7 +213,6 @@ a:focus {
 
 /*end header section*/
 
-
 /* slider section */
 .slider_section {
   padding: 90px 0 75px 0;
@@ -292,28 +289,10 @@ a:focus {
 }
 
 .slider_section .carousel-indicators {
-  position: unset;
-  margin: 0;
-  justify-content: center;
-  align-items: center;
-  margin-top: 45px;
+  display: none;
 }
 
-.slider_section .carousel-indicators li {
-  background-color: #000000;
-  width: 12px;
-  height: 12px;
-  border-radius: 100%;
-  opacity: 1;
-}
-
-.slider_section .carousel-indicators li.active {
-  width: 17px;
-  height: 17px;
-  background-color: #f0c40f;
-}
-
-/* NEW: Left-to-right slide animation */
+/* Left-to-right slide animation */
 .carousel-item {
   transition: transform .8s ease-in-out;
 }
@@ -345,14 +324,9 @@ a:focus {
 .carousel-item.active .delay-2 { transition-delay: .4s; }
 .carousel-item.active .delay-3 { transition-delay: .6s; }
 
-/* Hide default dots, keep your numbered ones */
-.slider_section .carousel-indicators {
-  display: none;
-}
-
 /* end slider section */
 
-/* trending section - FIXED FOR TABS */
+/* trending section */
 .trending_section {
   background-color: #f9f9f9;
 }
@@ -882,5 +856,12 @@ a:focus {
   .navbar-nav {
     flex-direction: column !important;
   }
+  
+  /* FIX: Mobile slider adjustments */
+  .slider_section .detail-box h1 {
+    font-size: 2.2rem;
+  }
+  .slider_section {
+    padding: 45px 0;
+  }
 }
-/*# sourceMappingURL=style.css.map */
