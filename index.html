@@ -15,194 +15,172 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
-  <style>
-    /* Hide left-side carousel indicators and controls */
-    .carousel-indicators {
-      display: none;
-    }
-    .carousel-control-prev,
-    .carousel-control-next {
-      display: none;
-    }
-  </style>
 </head>
 
 <body>
   <div class="hero_area">
- <!-- header section starts -->
-<header class="header_section">
-  <div class="container-fluid">
-    <nav class="custom_nav-container">
-      <a class="navbar-brand" href="index.html">
-        <img src="images/home-icon.svg" alt="Home" />
-      </a>
-      
-      <!-- Hamburger button -->
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+    <!-- header section starts -->
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="custom_nav-container">
+          <a class="navbar-brand" href="index.html">
+            <img src="images/home-icon.svg" alt="Home" />
+          </a>
+          
+          <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
 
-      <!-- Slide menu -->
-      <div class="slide-menu" id="slideMenu">
-        <div class="menu-overlay" id="menuOverlay"></div>
-        <div class="menu-content">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="about.html">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="shop.html">Shop</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="furniture.html">Products</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="contact.html">Contact us</a>
-            </li>
-          </ul>
-          <form class="menu-search" id="searchForm">
-            <input type="search" placeholder="Search Products" id="searchInput">
-            <button type="submit">Search</button>
-          </form>
-        </div>
+          <div class="slide-menu" id="slideMenu">
+            <div class="menu-overlay" id="menuOverlay"></div>
+            <div class="menu-content">
+              <ul class="navbar-nav">
+                <li class="nav-item active">
+                  <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="shop.html">Shop</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="furniture.html">Products</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="contact.html">Contact us</a>
+                </li>
+              </ul>
+              <form class="menu-search" id="searchForm">
+                <input type="search" placeholder="Search Products" id="searchInput">
+                <button type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
-<!-- end header section -->
+    </header>
+    <!-- end header section -->
     
-<!-- slider section -->
-<section class="slider_section">
-  <div class="play_btn">
-    <a href="">
-      <img src="images/play.png" alt="Play">
-    </a>
-  </div>
-  <div class="number_box">
-    <div>
-      <ol class="carousel-indicators indicator-2">
-        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active">01</li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="1">02</li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="2">03</li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="3">04</li>
-      </ol>
-    </div>
-  </div>
-  <div class="container">
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="6000" data-pause="hover">
-      <ol class="carousel-indicators">
-        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
-      </ol>
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-box">
-                <h1 class="animate-slide">
-                  Explore the Kitchen
-                  <span>We build</span>
-                </h1>
-                <p class="animate-slide delay-1">
-                  We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
-                </p>
-                <div class="btn-box animate-slide delay-2">
-                  <a href="about.html" class="btn-1">Read More</a>
-                  <a href="contact.html" class="btn-2">Contact us</a>
+    <!-- slider section -->
+    <section class="slider_section">
+      <div class="play_btn">
+        <a href="">
+          <img src="images/play.png" alt="Play">
+        </a>
+      </div>
+      <div class="container">
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" data-interval="6000" data-pause="hover">
+          <ol class="carousel-indicators">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+          </ol>
+          <div class="carousel-inner">
+            <div class="carousel-item active">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detail-box">
+                    <h1 class="animate-slide">
+                      Explore the Kitchen
+                      <span>We build</span>
+                    </h1>
+                    <p class="animate-slide delay-1">
+                      We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
+                    </p>
+                    <div class="btn-box animate-slide delay-2">
+                      <a href="about.html" class="btn-1">Read More</a>
+                      <a href="contact.html" class="btn-2">Contact us</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 img-container">
+                  <div class="img-box animate-slide delay-3">
+                    <img src="images/slider-img.png" alt="Stainless Steel Kitchen Equipment">
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-6 img-container">
-              <div class="img-box animate-slide delay-3">
-                <img src="images/slider-img.png" alt="Stainless Steel Kitchen Equipment">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-box">
-                <h1 class="animate-slide">
-                  Precisely Build
-                  <span>For Perfect Fit</span>
-                </h1>
-                <p class="animate-slide delay-1">
-                  We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
-                </p>
-                <div class="btn-box animate-slide delay-2">
-                  <a href="about.html" class="btn-1">Read More</a>
-                  <a href="contact.html" class="btn-2">Contact us</a>
+            <div class="carousel-item">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detail-box">
+                    <h1 class="animate-slide">
+                      Precisely Build
+                      <span>For Perfect Fit</span>
+                    </h1>
+                    <p class="animate-slide delay-1">
+                      We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
+                    </p>
+                    <div class="btn-box animate-slide delay-2">
+                      <a href="about.html" class="btn-1">Read More</a>
+                      <a href="contact.html" class="btn-2">Contact us</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 img-container">
+                  <div class="img-box animate-slide delay-3">
+                    <img src="images/slider-img.png" alt="Custom Kitchen Equipment">
+                  </div>
                 </div>
               </div>
             </div>
-            <div class="col-md-6 img-container">
-              <div class="img-box animate-slide delay-3">
-                <img src="images/slider-img.png" alt="Custom Kitchen Equipment">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-box">
-                <h1 class="animate-slide">
-                  Fully Tailored
-                  <span>for Customization</span>
-                </h1>
-                <p class="animate-slide delay-1">
-                  We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
-                </p>
-                <div class="btn-box animate-slide delay-2">
-                  <a href="about.html" class="btn-1">Read More</a>
-                  <a href="contact.html" class="btn-2">Contact us</a>
+            <div class="carousel-item">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detail-box">
+                    <h1 class="animate-slide">
+                      Fully Tailored
+                      <span>for Customization</span>
+                    </h1>
+                    <p class="animate-slide delay-1">
+                      We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
+                    </p>
+                    <div class="btn-box animate-slide delay-2">
+                      <a href="about.html" class="btn-1">Read More</a>
+                      <a href="contact.html" class="btn-2">Contact us</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 img-container">
+                  <div class="img-box animate-slide delay-3">
+                    <img src="images/slider-img.png" alt="Tailored Kitchen Solutions">
+                  </div>
                 </div>
               </div>
-            </div>
-            <div class="col-md-6 img-container">
-              <div class="img-box animate-slide delay-3">
-                <img src="images/slider-img.png" alt="Tailored Kitchen Solutions">
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="carousel-item">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="detail-box">
-                <h1 class="animate-slide">
-                  Always be there
-                  <span>When you need</span>
-                </h1>
-                <p class="animate-slide delay-1">
-                  We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
-                </p>
-                <div class="btn-box animate-slide delay-2">
-                  <a href="about.html" class="btn-1">Read More</a>
-                  <a href="contact.html" class="btn-2">Contact us</a>
+            <div class="carousel-item">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="detail-box">
+                    <h1 class="animate-slide">
+                      Always be there
+                      <span>When you need</span>
+                    </h1>
+                    <p class="animate-slide delay-1">
+                      We deliver stainless steel kitchen solutions engineered for durability, hygiene, and performance.
+                    </p>
+                    <div class="btn-box animate-slide delay-2">
+                      <a href="about.html" class="btn-1">Read More</a>
+                      <a href="contact.html" class="btn-2">Contact us</a>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="col-md-6 img-container">
-              <div class="img-box animate-slide delay-3">
-                <img src="images/slider-img.png" alt="Kitchen Equipment Support">
+                <div class="col-md-6 img-container">
+                  <div class="img-box animate-slide delay-3">
+                    <img src="images/slider-img.png" alt="Kitchen Equipment Support">
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
+    <!-- end slider section -->
   </div>
-</section>
-<!-- end slider section -->
     
   <!-- about section -->
   <section class="about_section layout_padding">
@@ -302,7 +280,6 @@
                 </div>
               </div>
             </div>
-          </div>
           <div class="col-md-6">
             <div class="collapse show" id="collapseOne" aria-labelledby="headingOne" data-parent="#accordion">
               <div class="img_container">
@@ -387,7 +364,6 @@
             <h2 class="main_heading">Stocked Items</h2>
             <div><a href="shop.html">Buy Now</a></div>
           </div>
-        </div>
         <div class="col-md-6">
           <div class="img-box">
             <img src="images/discount-img.png" alt="Discounted Kitchen Items">
@@ -442,7 +418,6 @@
             </div>
           </a>
         </div>
-      </div>
       <a href="furniture.html" class="brand-btn">See More</a>
     </div>
   </section>
@@ -554,6 +529,7 @@
             <h5>Informations</h5>
             <p>Venus delivers stainless steel kitchen solutions engineered for durability, hygiene, and performance.</p>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_insta">
             <h5>Instagram</h5>
@@ -572,6 +548,7 @@
               </div>
             </div>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_form">
             <h5>Newsletter</h5>
@@ -602,121 +579,65 @@
   </section>
   <!-- end footer section -->
 
-      <!-- end info_section -->
-
-    <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="js/bootstrap.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
-    
-    <script>
-      // Owl Carousel init - only if you actually use it on page
-      $(".owl-carousel").owlCarousel({
-        loop: true,
-        margin: 10,
-        nav: true,
-        navText: [],
-        autoplay: true,
-        autoplayHoverPause: true,
-        responsive: {
-          0: { items: 1 },
-          420: { items: 2 },
-          1000: { items: 5 }
-        }
-      });
-
-      // Sync numbered indicators with Bootstrap carousel
-      $('.carousel').on('slid.bs.carousel', function () {
-        $(".indicator-2 li").removeClass("active");
-        var indicators = $(".carousel-indicators li.active").data("slide-to");
-        $(".indicator-2").find("[data-slide-to='" + indicators + "']").addClass("active");
-      });
-
-      // Product Search Functionality
-      var searchForm = document.getElementById('searchForm');
-      if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          var searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-          var products = document.querySelectorAll('#products-list .box');
-          
-          if (products.length > 0) {
-            var found = false;
-            products.forEach(function(product) {
-              var productName = product.getAttribute('data-product-name').toLowerCase();
-              if (searchTerm === '' || productName.includes(searchTerm)) {
-                product.style.display = 'block';
-                found = true;
-              } else {
-                product.style.display = 'none';
-              }
-            });
-            
-            if (searchTerm !== '') {
-              document.getElementById('products-list').scrollIntoView({ behavior: 'smooth' });
-            }
-            
-            if (!found && searchTerm !== '') {
-              alert('No products found matching "' + searchTerm + '"');
-              products.forEach(function(product) {
-                product.style.display = 'block';
-              });
-            }
-          } else {
-            window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
-          }
-        });
+  <script src="js/jquery-3.4.1.min.js"></script>
+  <script src="js/bootstrap.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
+  
+  <script>
+    // Owl Carousel init
+    $(".owl-carousel").owlCarousel({
+      loop: true,
+      margin: 10,
+      nav: true,
+      navText: [],
+      autoplay: true,
+      autoplayHoverPause: true,
+      responsive: {
+        0: { items: 1 },
+        420: { items: 2 },
+        1000: { items: 5 }
       }
-    </script>
-        <script>
-  // Force scroll to top on refresh
-  if (history.scrollRestoration) {
-    history.scrollRestoration = 'manual';
-  }
-  window.onbeforeunload = function () {
-    window.scrollTo(0, 0);
-  }
-</script>
-        <script>
-  // Slide menu toggle
-  const menuToggle = document.getElementById('menuToggle');
-  const slideMenu = document.getElementById('slideMenu');
-  const menuOverlay = document.getElementById('menuOverlay');
-  
-  function toggleMenu() {
-    menuToggle.classList.toggle('active');
-    slideMenu.classList.toggle('active');
-    // Prevent body scroll when menu is open
-    document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
-  }
-  
-  menuToggle.addEventListener('click', toggleMenu);
-  menuOverlay.addEventListener('click', toggleMenu);
-  
-  // Close menu when clicking a link
-  document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      menuToggle.classList.remove('active');
-      slideMenu.classList.remove('active');
-      document.body.style.overflow = '';
     });
-  });
-  
-  // Search form
-  document.getElementById('searchForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    if(searchTerm) {
-      window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+
+    // Slide menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const slideMenu = document.getElementById('slideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    function toggleMenu() {
+      menuToggle.classList.toggle('active');
+      slideMenu.classList.toggle('active');
+      document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
     }
-  });
-  
-  // Force scroll to top on refresh - keep your existing code
-  if (history.scrollRestoration) {
-    history.scrollRestoration = 'manual';
-  }
-  window.onbeforeunload = function () {
-    window.scrollTo(0, 0);
-  }
-</script>
-  </body>
+    
+    menuToggle.addEventListener('click', toggleMenu);
+    menuOverlay.addEventListener('click', toggleMenu);
+    
+    // Close menu when clicking a link
+    document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        slideMenu.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+    
+    // Search form - redirects to furniture.html
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      if(searchTerm) {
+        window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+      }
+    });
+    
+    // Force scroll to top on refresh
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
+    }
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
 </html>
