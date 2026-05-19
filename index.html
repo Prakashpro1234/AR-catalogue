@@ -676,5 +676,47 @@
     window.scrollTo(0, 0);
   }
 </script>
+        <script>
+  // Slide menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const slideMenu = document.getElementById('slideMenu');
+  const menuOverlay = document.getElementById('menuOverlay');
+  
+  function toggleMenu() {
+    menuToggle.classList.toggle('active');
+    slideMenu.classList.toggle('active');
+    // Prevent body scroll when menu is open
+    document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
+  }
+  
+  menuToggle.addEventListener('click', toggleMenu);
+  menuOverlay.addEventListener('click', toggleMenu);
+  
+  // Close menu when clicking a link
+  document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      menuToggle.classList.remove('active');
+      slideMenu.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+  });
+  
+  // Search form
+  document.getElementById('searchForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    if(searchTerm) {
+      window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+    }
+  });
+  
+  // Force scroll to top on refresh - keep your existing code
+  if (history.scrollRestoration) {
+    history.scrollRestoration = 'manual';
+  }
+  window.onbeforeunload = function () {
+    window.scrollTo(0, 0);
+  }
+</script>
   </body>
 </html>
