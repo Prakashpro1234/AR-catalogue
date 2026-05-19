@@ -56,13 +56,12 @@ body {
 
 /*header section*/
 .hero_area {
-  height: 100vh;
+  min-height: 100vh;
   background-image: url(../images/hero-bg.jpg);
   background-size: cover;
   background-position: center;
   position: relative;
   background-repeat: no-repeat;
-  overflow: hidden;
 }
 
 .hero_area::after {
@@ -219,7 +218,7 @@ a:focus {
 
 /* slider section */
 .slider_section {
-  height: calc(90% - 70px);
+  padding: 90px 0 75px 0;
   display: flex;
   align-items: center;
 }
