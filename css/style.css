@@ -995,3 +995,8 @@ a:focus {
     max-width: 100%;
   }
 }
+/* Remove instagram + newsletter from footer */
+.info_insta,
+.info_form {
+  display: none !important;
+}
