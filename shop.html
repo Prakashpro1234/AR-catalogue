@@ -20,48 +20,48 @@
 <body class="sub_page">
   <div class="hero_area">
     <!-- header section starts -->
-<header class="header_section">
-  <div class="container-fluid">
-    <nav class="custom_nav-container">
-      <a class="navbar-brand" href="index.html">
-        <img src="images/home-icon.svg" alt="Home" />
-      </a>
-      
-      <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="custom_nav-container">
+          <a class="navbar-brand" href="index.html">
+            <img src="images/home-icon.svg" alt="Home" />
+          </a>
+          
+          <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
 
-      <div class="slide-menu" id="slideMenu">
-        <div class="menu-overlay" id="menuOverlay"></div>
-        <div class="menu-content">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="about.html">About</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="shop.html">Shop</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="furniture.html">Products</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="contact.html">Contact us</a>
-            </li>
-          </ul>
-          <form class="menu-search" id="searchForm">
-            <input type="search" placeholder="Search Products" id="searchInput">
-            <button type="submit">Search</button>
-          </form>
-        </div>
+          <div class="slide-menu" id="slideMenu">
+            <div class="menu-overlay" id="menuOverlay"></div>
+            <div class="menu-content">
+              <ul class="navbar-nav">
+                <li class="nav-item">
+                  <a class="nav-link" href="index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item active">
+                  <a class="nav-link" href="shop.html">Shop</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="furniture.html">Products</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="contact.html">Contact us</a>
+                </li>
+              </ul>
+              <form class="menu-search" id="searchForm">
+                <input type="search" placeholder="Search Products" id="searchInput">
+                <button type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        </nav>
       </div>
-    </nav>
-  </div>
-</header>
+    </header>
     <!-- end header section -->
   </div>
 
@@ -198,6 +198,7 @@
             <h5>Informations</h5>
             <p>Venus delivers stainless steel kitchen solutions engineered for durability, hygiene, and performance.</p>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_insta">
             <h5>Instagram</h5>
@@ -248,7 +249,31 @@
 
   <script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/bootstrap.js"></script>
+  
   <script>
+    // Slide menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const slideMenu = document.getElementById('slideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    
+    function toggleMenu() {
+      menuToggle.classList.toggle('active');
+      slideMenu.classList.toggle('active');
+      document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
+    }
+    
+    menuToggle.addEventListener('click', toggleMenu);
+    menuOverlay.addEventListener('click', toggleMenu);
+    
+    // Close menu when clicking a link
+    document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        slideMenu.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    });
+    
     // Product Search - filters products on this page
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -287,57 +312,14 @@
         document.getElementById('searchForm').dispatchEvent(new Event('submit'));
       }
     });
-  </script>
-        <script>
-  // Force scroll to top on refresh
-  if (history.scrollRestoration) {
-    history.scrollRestoration = 'manual';
-  }
-  window.onbeforeunload = function () {
-    window.scrollTo(0, 0);
-  }
-</script>
-        <script>
-  // Slide menu toggle
-  const menuToggle = document.getElementById('menuToggle');
-  const slideMenu = document.getElementById('slideMenu');
-  const menuOverlay = document.getElementById('menuOverlay');
-  
-  function toggleMenu() {
-    menuToggle.classList.toggle('active');
-    slideMenu.classList.toggle('active');
-    // Prevent body scroll when menu is open
-    document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
-  }
-  
-  menuToggle.addEventListener('click', toggleMenu);
-  menuOverlay.addEventListener('click', toggleMenu);
-  
-  // Close menu when clicking a link
-  document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      menuToggle.classList.remove('active');
-      slideMenu.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-  });
-  
-  // Search form
-  document.getElementById('searchForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    if(searchTerm) {
-      window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+    
+    // Force scroll to top on refresh
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
     }
-  });
-  
-  // Force scroll to top on refresh - keep your existing code
-  if (history.scrollRestoration) {
-    history.scrollRestoration = 'manual';
-  }
-  window.onbeforeunload = function () {
-    window.scrollTo(0, 0);
-  }
-</script>
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    }
+  </script>
 </body>
 </html>
