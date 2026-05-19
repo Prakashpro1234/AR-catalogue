@@ -216,6 +216,7 @@ a:focus {
 
 /*end header section*/
 
+
 /* slider section */
 .slider_section {
   height: calc(90% - 70px);
@@ -311,49 +312,40 @@ a:focus {
   background-color: #f0c40f;
 }
 
+/* NEW: Slider animations + timing */
+.carousel-fade .carousel-item {
+  opacity: 0;
+  transition: opacity .8s ease-in-out;
+}
+.carousel-fade .carousel-item.active {
+  opacity: 1;
+}
+
+.carousel-item .animate-slide {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all .6s ease-out;
+}
+.carousel-item.active .animate-slide {
+  opacity: 1;
+  transform: translateY(0);
+}
+.carousel-item.active .delay-1 {
+  transition-delay: .2s;
+}
+.carousel-item.active .delay-2 {
+  transition-delay: .4s;
+}
+.carousel-item.active .delay-3 {
+  transition-delay: .6s;
+}
+
+/* Hide default dots, keep your numbered ones */
+.slider_section .carousel-indicators {
+  display: none;
+}
+
 /* end slider section */
-
-/* about section */
-.about_section .row {
-  align-items: center;
-}
-
-.about_section .img-box img {
-  max-width: 100%;
-}
-
-.about_section .detail-box p {
-  margin-top: 15px;
-  margin-bottom: 25px;
-}
-
-.about_section .detail-box ul {
-  padding-left: 20px;
-  margin: 20px 0;
-}
-
-.about_section .detail-box ul li {
-  margin-bottom: 10px;
-}
-
-.about_section .detail-box a {
-  display: inline-block;
-  padding: 10px 45px;
-  background-color: #f0c40f;
-  color: #ffffff;
-  border-radius: 5px;
-  border: 1px solid #f0c40f;
-  transition: all 0.3s;
-  text-transform: uppercase;
-  font-family: 'Poppins', sans-serif;
-}
-
-.about_section .detail-box a:hover {
-  background-color: transparent;
-  color: #f0c40f;
-}
-
-/* end about section */
 
 /* trending section - FIXED FOR TABS */
 .trending_section {
