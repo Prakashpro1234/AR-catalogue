@@ -137,6 +137,7 @@
                   <a href="contact.html" class="btn-2">Contact us</a>
                 </div>
               </div>
+            </div>
             <div class="col-md-6 img-container">
               <div class="img-box animate-slide delay-3">
                 <img src="images/slider-img.png" alt="Custom Kitchen Equipment">
@@ -197,7 +198,6 @@
   </div>
 </section>
 <!-- end slider section -->
-</div>
     
   <!-- about section -->
   <section class="about_section layout_padding">
@@ -597,115 +597,70 @@
   </section>
   <!-- end footer section -->
 
-  <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
-  <script type="text/javascript" src="js/bootstrap.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
-  <script type="text/javascript">
-    $(".owl-carousel").owlCarousel({
-      loop: true,
-      margin: 10,
-      nav: true,
-      navText: [],
-      autoplay: true,
-      autoplayHoverPause: true,
-      responsive: {
-        0: { items: 1 },
-        420: { items: 2 },
-        1000: { items: 5 }
-      }
-    });
-  </script>
-  <script>
-    $('.carousel').on('slid.bs.carousel', function () {
-      $(".indicator-2 li").removeClass("active");
-      indicators = $(".carousel-indicators li.active").data("slide-to");
-      a = $(".indicator-2").find("[data-slide-to='" + indicators + "']").addClass("active");
-    })
-  </script>
-  <script>
-    // Product Search Functionality
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-      const products = document.querySelectorAll('#products-list .box');
-      let found = false;
-      
-      products.forEach(function(product) {
-        const productName = product.getAttribute('data-product-name').toLowerCase();
-        if (searchTerm === '' || productName.includes(searchTerm)) {
-          product.style.display = 'block';
-          found = true;
-        } else {
-          product.style.display = 'none';
-        }
-      });
-      
-      if (searchTerm !== '') {
-        document.getElementById('products-list').scrollIntoView({ behavior: 'smooth' });
-      }
-      
-      if (!found && searchTerm !== '') {
-        alert('No products found matching "' + searchTerm + '"');
-        products.forEach(function(product) {
-          product.style.display = 'block';
-        });
-      }
-    });
-  </script>
-        <script src="js/jquery-3.4.1.min.js"></script>
-<script src="js/bootstrap.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
-<script>
-  $(".owl-carousel").owlCarousel({
-    loop: true,
-    margin: 10,
-    nav: true,
-    navText: [],
-    autoplay: true,
-    autoplayHoverPause: true,
-    responsive: {
-      0: { items: 1 },
-      420: { items: 2 },
-      1000: { items: 5 }
-    }
-  });
-  
-  $('.carousel').on('slid.bs.carousel', function () {
-    $(".indicator-2 li").removeClass("active");
-    indicators = $(".carousel-indicators li.active").data("slide-to");
-    $(".indicator-2").find("[data-slide-to='" + indicators + "']").addClass("active");
-  });
+      <!-- end info_section -->
 
-  // Product Search
-  document.getElementById('searchForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    const products = document.querySelectorAll('#products-list .box');
-    if (products.length > 0) {
-      let found = false;
-      products.forEach(function(product) {
-        const productName = product.getAttribute('data-product-name').toLowerCase();
-        if (searchTerm === '' || productName.includes(searchTerm)) {
-          product.style.display = 'block';
-          found = true;
-        } else {
-          product.style.display = 'none';
+    <script src="js/jquery-3.4.1.min.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
+    
+    <script>
+      // Owl Carousel init - only if you actually use it on page
+      $(".owl-carousel").owlCarousel({
+        loop: true,
+        margin: 10,
+        nav: true,
+        navText: [],
+        autoplay: true,
+        autoplayHoverPause: true,
+        responsive: {
+          0: { items: 1 },
+          420: { items: 2 },
+          1000: { items: 5 }
         }
       });
-      if (searchTerm !== '') {
-        document.getElementById('products-list').scrollIntoView({ behavior: 'smooth' });
-      }
-      if (!found && searchTerm !== '') {
-        alert('No products found matching "' + searchTerm + '"');
-        products.forEach(function(product) {
-          product.style.display = 'block';
+
+      // Sync numbered indicators with Bootstrap carousel
+      $('.carousel').on('slid.bs.carousel', function () {
+        $(".indicator-2 li").removeClass("active");
+        var indicators = $(".carousel-indicators li.active").data("slide-to");
+        $(".indicator-2").find("[data-slide-to='" + indicators + "']").addClass("active");
+      });
+
+      // Product Search Functionality
+      var searchForm = document.getElementById('searchForm');
+      if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+          var products = document.querySelectorAll('#products-list .box');
+          
+          if (products.length > 0) {
+            var found = false;
+            products.forEach(function(product) {
+              var productName = product.getAttribute('data-product-name').toLowerCase();
+              if (searchTerm === '' || productName.includes(searchTerm)) {
+                product.style.display = 'block';
+                found = true;
+              } else {
+                product.style.display = 'none';
+              }
+            });
+            
+            if (searchTerm !== '') {
+              document.getElementById('products-list').scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            if (!found && searchTerm !== '') {
+              alert('No products found matching "' + searchTerm + '"');
+              products.forEach(function(product) {
+                product.style.display = 'block';
+              });
+            }
+          } else {
+            window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+          }
         });
       }
-    } else {
-      window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
-    }
-  });
-</script>
-</body>
-</body>
+    </script>
+  </body>
 </html>
