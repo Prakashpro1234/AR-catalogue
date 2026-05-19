@@ -203,5 +203,14 @@
       window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
     });
   </script>
+  <script>
+  // Force scroll to top on refresh
+  if (history.scrollRestoration) {
+    history.scrollRestoration = 'manual';
+  }
+  window.onbeforeunload = function () {
+    window.scrollTo(0, 0);
+  }
+</script>
 </body>
 </html>
