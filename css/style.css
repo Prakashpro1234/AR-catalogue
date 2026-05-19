@@ -312,33 +312,37 @@ a:focus {
   background-color: #f0c40f;
 }
 
-/* NEW: Slider animations + timing */
-.carousel-fade .carousel-item {
-  opacity: 0;
-  transition: opacity .8s ease-in-out;
-}
-.carousel-fade .carousel-item.active {
-  opacity: 1;
+/* NEW: Left-to-right slide animation */
+.carousel-item {
+  transition: transform .8s ease-in-out;
 }
 
+.carousel-item-next.carousel-item-left,
+.carousel-item-prev.carousel-item-right {
+  transform: translateX(0);
+}
+.carousel-item-next,
+.active.carousel-item-right {
+  transform: translateX(100%);
+}
+.carousel-item-prev,
+.active.carousel-item-left {
+  transform: translateX(-100%);
+}
+
+/* Text/image entrance animations from left */
 .carousel-item .animate-slide {
   opacity: 0;
-  transform: translateY(30px);
-  transition: all .6s ease-out;
+  transform: translateX(-50px);
+  transition: all .7s ease-out;
 }
 .carousel-item.active .animate-slide {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
-.carousel-item.active .delay-1 {
-  transition-delay: .2s;
-}
-.carousel-item.active .delay-2 {
-  transition-delay: .4s;
-}
-.carousel-item.active .delay-3 {
-  transition-delay: .6s;
-}
+.carousel-item.active .delay-1 { transition-delay: .2s; }
+.carousel-item.active .delay-2 { transition-delay: .4s; }
+.carousel-item.active .delay-3 { transition-delay: .6s; }
 
 /* Hide default dots, keep your numbered ones */
 .slider_section .carousel-indicators {
