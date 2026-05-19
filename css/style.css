@@ -80,7 +80,15 @@ body {
 }
 
 .header_section {
-  overflow-x: hidden;
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.sub_page .header_section {
+  background: #ffffff;
 }
 
 .header_section .container-fluid {
