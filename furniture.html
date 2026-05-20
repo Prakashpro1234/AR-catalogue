@@ -68,147 +68,294 @@
 
   <!-- trending section -->
   <section class="trending_section layout_padding">
-    <div id="accordion">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-6">
-            <div class="detail-box">
-              <div class="heading_container">
-                <h2>Product Categories</h2>
-              </div>
-              <div class="tab_container">
-                <div class="t-link-box" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
-                  aria-controls="collapseOne">
-                  <div class="number"><h5>01</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Live Cooking</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseTwo"
-                  aria-expanded="false" aria-controls="collapseTwo">
-                  <div class="number"><h5>02</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Stall & Parcel</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseThree"
-                  aria-expanded="false" aria-controls="collapseThree">
-                  <div class="number"><h5>03</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Juice & Chat</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseFour"
-                  aria-expanded="false" aria-controls="collapseFour">
-                  <div class="number"><h5>04</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Plate wash</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseFive"
-                  aria-expanded="false" aria-controls="collapseFive">
-                  <div class="number"><h5>05</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Bulk Cooking</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseSix"
-                  aria-expanded="false" aria-controls="collapseSix">
-                  <div class="number"><h5>06</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Grinding</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseSeven"
-                  aria-expanded="false" aria-controls="collapseSeven">
-                  <div class="number"><h5>07</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Veg Cutting</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseEight"
-                  aria-expanded="false" aria-controls="collapseEight">
-                  <div class="number"><h5>08</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Vessel wash</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseNine"
-                  aria-expanded="false" aria-controls="collapseNine">
-                  <div class="number"><h5>09</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Store</h5></div>
-                </div>
-                <div class="t-link-box collapsed" data-toggle="collapse" data-target="#collapseTen"
-                  aria-expanded="false" aria-controls="collapseTen">
-                  <div class="number"><h5>10</h5></div>
-                  <hr>
-                  <div class="t-name"><h5>Essentials</h5></div>
-                </div>
-              </div>
+    <div class="container">
+      <div class="heading_container">
+        <h2>Product Categories</h2>
+      </div>
+      
+      <div class="working-area-folders" id="products-list">
+        <!-- Folder 01: Live Cooking -->
+        <div class="folder-box" data-folder="1">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/t-1.jpg" alt="">
+              <img src="images/t-2.jpg" alt="">
+              <img src="images/t-3.jpg" alt="">
+              <img src="images/t-4.jpg" alt="">
             </div>
-          <div class="col-md-6" id="products-list">
-            <div class="collapse show" id="collapseOne" aria-labelledby="headingOne" data-parent="#accordion">
-              <div class="img_container">
-                <div class="box b-1">
-                  <div class="img-box" data-product-name="Live Cooking Equipment"><img src="images/t-1.jpg" alt="Live Cooking Equipment"></div>
-                  <div class="img-box" data-product-name="Live Cooking Station"><img src="images/t-2.jpg" alt="Live Cooking Station"></div>
-                </div>
-                <div class="box b-2">
-                  <div class="img-box" data-product-name="SS Burner Range"><img src="images/t-3.jpg" alt="SS Burner Range"></div>
-                  <div class="img-box" data-product-name="Commercial Cooktop"><img src="images/t-4.jpg" alt="Commercial Cooktop"></div>
-                </div>
-              </div>
+            <h5>Live Cooking</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Live Cooking</h4>
+              <button class="close-folder">×</button>
             </div>
-            <div class="collapse" id="collapseTwo" aria-labelledby="headingTwo" data-parent="#accordion">
-              <div class="img_container">
-                <div class="box b-1">
-                  <div class="img-box" data-product-name="Parcel Counter"><img src="images/t-3.jpg" alt="Parcel Counter"></div>
-                  <div class="img-box" data-product-name="Food Stall Setup"><img src="images/t-4.jpg" alt="Food Stall Setup"></div>
-                </div>
-                <div class="box b-2">
-                  <div class="img-box" data-product-name="Service Counter"><img src="images/t-1.jpg" alt="Service Counter"></div>
-                  <div class="img-box" data-product-name="Takeaway Station"><img src="images/t-2.jpg" alt="Takeaway Station"></div>
-                </div>
-              </div>
+            <div class="folder-items">
+              <a href="#" class="folder-item" data-product-name="Live Cooking Equipment">
+                <img src="images/t-1.jpg" alt="">
+                <span>Live Cooking Equipment</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Live Cooking Station">
+                <img src="images/t-2.jpg" alt="">
+                <span>Live Cooking Station</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="SS Burner Range">
+                <img src="images/t-3.jpg" alt="">
+                <span>SS Burner Range</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Commercial Cooktop">
+                <img src="images/t-4.jpg" alt="">
+                <span>Commercial Cooktop</span>
+              </a>
             </div>
-            <div class="collapse" id="collapseThree" aria-labelledby="headingThree" data-parent="#accordion">
-              <div class="img_container">
-                <div class="box b-1">
-                  <div class="img-box" data-product-name="Juice Counter"><img src="images/t-4.jpg" alt="Juice Counter"></div>
-                  <div class="img-box" data-product-name="Chat Counter"><img src="images/t-1.jpg" alt="Chat Counter"></div>
-                </div>
-                <div class="box b-2">
-                  <div class="img-box" data-product-name="Beverage Station"><img src="images/t-3.jpg" alt="Beverage Station"></div>
-                  <div class="img-box" data-product-name="Snack Station"><img src="images/t-2.jpg" alt="Snack Station"></div>
-                </div>
-              </div>
+          </div>
+        </div>
+
+        <!-- Folder 02: Stall & Parcel -->
+        <div class="folder-box" data-folder="2">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/t-3.jpg" alt="">
+              <img src="images/t-4.jpg" alt="">
+              <img src="images/t-1.jpg" alt="">
+              <img src="images/t-2.jpg" alt="">
             </div>
-            <div class="collapse" id="collapseFour" aria-labelledby="headingFour" data-parent="#accordion">
-              <div class="img_container">
-                <div class="box b-1">
-                  <div class="img-box" data-product-name="Plate Wash Sink"><img src="images/t-1.jpg" alt="Plate Wash Sink"></div>
-                  <div class="img-box" data-product-name="Dishwash Area"><img src="images/t-4.jpg" alt="Dishwash Area"></div>
-                </div>
-                <div class="box b-2">
-                  <div class="img-box" data-product-name="SS Wash Table"><img src="images/t-3.jpg" alt="SS Wash Table"></div>
-                  <div class="img-box" data-product-name="Cleaning Station"><img src="images/t-2.jpg" alt="Cleaning Station"></div>
-                </div>
-              </div>
+            <h5>Stall & Parcel</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Stall & Parcel</h4>
+              <button class="close-folder">×</button>
             </div>
-            <div class="collapse" id="collapseFive" aria-labelledby="headingFive" data-parent="#accordion">
-              <div class="img_container" data-product-name="Bulk Cooking Equipment"><p>Bulk Cooking equipment - boilers, tilting pans, stock pot ranges. Contact us for catalog.</p></div>
+            <div class="folder-items">
+              <a href="#" class="folder-item" data-product-name="Parcel Counter">
+                <img src="images/t-3.jpg" alt="">
+                <span>Parcel Counter</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Food Stall Setup">
+                <img src="images/t-4.jpg" alt="">
+                <span>Food Stall Setup</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Service Counter">
+                <img src="images/t-1.jpg" alt="">
+                <span>Service Counter</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Takeaway Station">
+                <img src="images/t-2.jpg" alt="">
+                <span>Takeaway Station</span>
+              </a>
             </div>
-            <div class="collapse" id="collapseSix" aria-labelledby="headingSix" data-parent="#accordion">
-              <div class="img_container" data-product-name="Grinding Equipment"><p>Grinding equipment - wet grinders, pulverizers. Contact us for catalog.</p></div>
+          </div>
+        </div>
+
+        <!-- Folder 03: Juice & Chat -->
+        <div class="folder-box" data-folder="3">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/t-4.jpg" alt="">
+              <img src="images/t-1.jpg" alt="">
+              <img src="images/t-3.jpg" alt="">
+              <img src="images/t-2.jpg" alt="">
             </div>
-            <div class="collapse" id="collapseSeven" aria-labelledby="headingSeven" data-parent="#accordion">
-              <div class="img_container" data-product-name="Veg Cutting Tables"><p>Veg Cutting tables and stations. Contact us for catalog.</p></div>
+            <h5>Juice & Chat</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Juice & Chat</h4>
+              <button class="close-folder">×</button>
             </div>
-            <div class="collapse" id="collapseEight" aria-labelledby="headingEight" data-parent="#accordion">
-              <div class="img_container" data-product-name="Vessel Wash Sinks"><p>Vessel wash sinks and pot wash areas. Contact us for catalog.</p></div>
+            <div class="folder-items">
+              <a href="#" class="folder-item" data-product-name="Juice Counter">
+                <img src="images/t-4.jpg" alt="">
+                <span>Juice Counter</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Chat Counter">
+                <img src="images/t-1.jpg" alt="">
+                <span>Chat Counter</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Beverage Station">
+                <img src="images/t-3.jpg" alt="">
+                <span>Beverage Station</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Snack Station">
+                <img src="images/t-2.jpg" alt="">
+                <span>Snack Station</span>
+              </a>
             </div>
-            <div class="collapse" id="collapseNine" aria-labelledby="headingNine" data-parent="#accordion">
-              <div class="img_container" data-product-name="Storage Racks"><p>Storage racks, shelves, and cold rooms. Contact us for catalog.</p></div>
+          </div>
+        </div>
+
+        <!-- Folder 04: Plate wash -->
+        <div class="folder-box" data-folder="4">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/t-1.jpg" alt="">
+              <img src="images/t-4.jpg" alt="">
+              <img src="images/t-3.jpg" alt="">
+              <img src="images/t-2.jpg" alt="">
             </div>
-            <div class="collapse" id="collapseTen" aria-labelledby="headingTen" data-parent="#accordion">
-              <div class="img_container" data-product-name="Kitchen Essentials"><p>Kitchen essentials - work tables, trolleys, exhaust hoods. Contact us for catalog.</p></div>
+            <h5>Plate Wash</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Plate Wash</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items">
+              <a href="#" class="folder-item" data-product-name="Plate Wash Sink">
+                <img src="images/t-1.jpg" alt="">
+                <span>Plate Wash Sink</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Dishwash Area">
+                <img src="images/t-4.jpg" alt="">
+                <span>Dishwash Area</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="SS Wash Table">
+                <img src="images/t-3.jpg" alt="">
+                <span>SS Wash Table</span>
+              </a>
+              <a href="#" class="folder-item" data-product-name="Cleaning Station">
+                <img src="images/t-2.jpg" alt="">
+                <span>Cleaning Station</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder 05: Bulk Cooking -->
+        <div class="folder-box" data-folder="5">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+            </div>
+            <h5>Bulk Cooking</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Bulk Cooking</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items" data-product-name="Bulk Cooking Equipment">
+              <p style="text-align:center;width:100%;color:#666;">Bulk Cooking equipment - boilers, tilting pans, stock pot ranges. Contact us for catalog.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder 06: Grinding -->
+        <div class="folder-box" data-folder="6">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+            </div>
+            <h5>Grinding</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Grinding</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items" data-product-name="Grinding Equipment">
+              <p style="text-align:center;width:100%;color:#666;">Grinding equipment - wet grinders, pulverizers. Contact us for catalog.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder 07: Veg Cutting -->
+        <div class="folder-box" data-folder="7">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+            </div>
+            <h5>Veg Cutting</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Veg Cutting</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items" data-product-name="Veg Cutting Tables">
+              <p style="text-align:center;width:100%;color:#666;">Veg Cutting tables and stations. Contact us for catalog.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder 08: Vessel wash -->
+        <div class="folder-box" data-folder="8">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+            </div>
+            <h5>Vessel Wash</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Vessel Wash</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items" data-product-name="Vessel Wash Sinks">
+              <p style="text-align:center;width:100%;color:#666;">Vessel wash sinks and pot wash areas. Contact us for catalog.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder 09: Store -->
+        <div class="folder-box" data-folder="9">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+            </div>
+            <h5>Store</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Store</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items" data-product-name="Storage Racks">
+              <p style="text-align:center;width:100%;color:#666;">Storage racks, shelves, and cold rooms. Contact us for catalog.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Folder 10: Essentials -->
+        <div class="folder-box" data-folder="10">
+          <div class="folder-preview">
+            <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+              <img src="images/slider-img.png" alt="">
+            </div>
+            <h5>Essentials</h5>
+          </div>
+          <div class="folder-content">
+            <div class="folder-header">
+              <h4>Essentials</h4>
+              <button class="close-folder">×</button>
+            </div>
+            <div class="folder-items" data-product-name="Kitchen Essentials">
+              <p style="text-align:center;width:100%;color:#666;">Kitchen essentials - work tables, trolleys, exhaust hoods. Contact us for catalog.</p>
             </div>
           </div>
         </div>
       </div>
+      
+      <div class="folder-backdrop"></div>
     </div>
   </section>
   <!-- end trending section -->
@@ -236,6 +383,7 @@
               <p>sales@vceindia.com</p>
             </div>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_info">
             <h5>Informations</h5>
@@ -334,42 +482,42 @@
       });
     });
     
-    // Product Search - filters .img-box and .img_container with data-product-name
+    // Product Search - filters folder items
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-      const products = document.querySelectorAll('#products-list [data-product-name]');
-      const allCollapses = document.querySelectorAll('#accordion .collapse');
+      const folderItems = document.querySelectorAll('.folder-item[data-product-name]');
+      const folders = document.querySelectorAll('.folder-box');
       
       if (searchTerm === '') {
-        products.forEach(p => p.style.display = 'block');
-        allCollapses.forEach((c, i) => {
-          if (i === 0) c.classList.add('show');
-          else c.classList.remove('show');
-        });
+        folderItems.forEach(item => item.style.display = 'block');
+        folders.forEach(folder => folder.style.display = 'block');
         return;
       }
       
       let found = false;
-      allCollapses.forEach(c => c.classList.add('show'));
-      
-      products.forEach(function(product) {
-        const productName = product.getAttribute('data-product-name').toLowerCase();
-        if (productName.includes(searchTerm)) {
-          product.style.display = 'block';
-          found = true;
-        } else {
-          product.style.display = 'none';
-        }
+      folders.forEach(folder => {
+        const items = folder.querySelectorAll('.folder-item[data-product-name]');
+        let folderHasMatch = false;
+        
+        items.forEach(item => {
+          const productName = item.getAttribute('data-product-name').toLowerCase();
+          if (productName.includes(searchTerm)) {
+            item.style.display = 'block';
+            folderHasMatch = true;
+            found = true;
+          } else {
+            item.style.display = 'none';
+          }
+        });
+        
+        folder.style.display = folderHasMatch ? 'block' : 'none';
       });
       
       if (!found) {
         alert('No products found matching "' + searchTerm + '"');
-        products.forEach(p => p.style.display = 'block');
-        allCollapses.forEach((c, i) => {
-          if (i === 0) c.classList.add('show');
-          else c.classList.remove('show');
-        });
+        folderItems.forEach(item => item.style.display = 'block');
+        folders.forEach(folder => folder.style.display = 'block');
       }
     });
     
@@ -381,6 +529,35 @@
         document.getElementById('searchInput').value = searchTerm;
         document.getElementById('searchForm').dispatchEvent(new Event('submit'));
       }
+    });
+    
+    // Android Folder System
+    document.addEventListener('DOMContentLoaded', function() {
+      const folders = document.querySelectorAll('.folder-box');
+      const backdrop = document.querySelector('.folder-backdrop');
+      
+      folders.forEach(folder => {
+        const preview = folder.querySelector('.folder-preview');
+        const closeBtn = folder.querySelector('.close-folder');
+        
+        preview.addEventListener('click', () => {
+          folder.classList.add('active');
+          backdrop.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+        
+        closeBtn.addEventListener('click', () => {
+          folder.classList.remove('active');
+          backdrop.classList.remove('active');
+          document.body.style.overflow = '';
+        });
+      });
+      
+      backdrop.addEventListener('click', () => {
+        document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
+        backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      });
     });
     
     // Force scroll to top on refresh
