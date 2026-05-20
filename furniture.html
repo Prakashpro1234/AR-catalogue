@@ -489,7 +489,7 @@
   </section>
   <!-- end footer section -->
 
-  <script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
   <!-- Google Model Viewer -->
@@ -533,51 +533,12 @@
       });
     });
 
-    // Product Search
+    // Search form - redirects to furniture.html
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-      const folderItems = document.querySelectorAll('.folder-item[data-product-name]');
-      const folders = document.querySelectorAll('.folder-box');
-
-      if (searchTerm === '') {
-        folderItems.forEach(item => item.style.display = 'block');
-        folders.forEach(folder => folder.style.display = 'block');
-        return;
-      }
-
-      let found = false;
-      folders.forEach(folder => {
-        const items = folder.querySelectorAll('.folder-item[data-product-name]');
-        let folderHasMatch = false;
-
-        items.forEach(item => {
-          const productName = item.getAttribute('data-product-name').toLowerCase();
-          if (productName.includes(searchTerm)) {
-            item.style.display = 'block';
-            folderHasMatch = true;
-            found = true;
-          } else {
-            item.style.display = 'none';
-          }
-        });
-
-        folder.style.display = folderHasMatch? 'block' : 'none';
-      });
-
-      if (!found) {
-        alert('No products found matching "' + searchTerm + '"');
-        folderItems.forEach(item => item.style.display = 'block');
-        folders.forEach(folder => folder.style.display = 'block');
-      }
-    });
-
-    window.addEventListener('load', function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchTerm = urlParams.get('search');
-      if (searchTerm) {
-        document.getElementById('searchInput').value = searchTerm;
-        document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+      if(searchTerm) {
+        window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
       }
     });
 
@@ -610,12 +571,89 @@
       });
     });
 
-    // 3D Product Viewer Logic + Dimensions
+    // 3D Product Viewer Logic with Dynamic Dimensions
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
     const close3dModal = document.getElementById('close3dModal');
     const arButton = document.getElementById('arButton');
+
+    function drawLine(svgLine, dot1, dot2) {
+      if (!dot1 ||!dot2) return;
+      svgLine.setAttribute('x1', dot1.canvasPosition.x);
+      svgLine.setAttribute('y1', dot1.canvasPosition.y);
+      svgLine.setAttribute('x2', dot2.canvasPosition.x);
+      svgLine.setAttribute('y2', dot2.canvasPosition.y);
+    }
+
+    function renderDimensions() {
+      const lines = product3dViewer.querySelectorAll('.dimensionLine');
+      const dims = product3dViewer.querySelectorAll('.dim');
+
+      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const minXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
+
+      const dimLength = product3dViewer.queryHotspot('hotspot-dim-X');
+      const dimHeight = product3dViewer.queryHotspot('hotspot-dim-Y');
+      const dimBreadth = product3dViewer.queryHotspot('hotspot-dim-Z');
+
+      if (!minXminYminZ ||!maxXminYminZ ||!maxXmaxYminZ) {
+        lines.forEach(l => l.classList.add('hide'));
+        dims.forEach(d => d.classList.add('hide'));
+        return;
+      }
+
+      lines.forEach(l => l.classList.remove('hide'));
+      dims.forEach(d => d.classList.remove('hide'));
+
+      // Length = X axis
+      if (dimLength && minXminYminZ && maxXminYminZ) {
+        const dist = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
+        dimLength.textContent = `Length: ${dist.toFixed(1)}"`;
+        drawLine(lines[0], minXminYminZ, maxXminYminZ);
+      }
+
+      // Height = Y axis
+      if (dimHeight && maxXminYminZ && maxXmaxYminZ) {
+        const dist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
+        dimHeight.textContent = `Height: ${dist.toFixed(1)}"`;
+        drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
+      }
+
+      // Breadth = Z axis
+      if (dimBreadth && maxXmaxYminZ && minXmaxYminZ) {
+        const dist = Math.abs(maxXmaxYminZ.position.x - minXmaxYminZ.position.x) * 39.37;
+        dimBreadth.textContent = `Breadth: ${dist.toFixed(1)}"`;
+        drawLine(lines[2], maxXmaxYminZ, minXmaxYminZ);
+      }
+    }
+
+    function setupDimensions() {
+      const bbox = product3dViewer.getBoundingBox();
+      const min = bbox.min;
+      const max = bbox.max;
+
+      // 4 corner hotspots for 3 edges
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y-Z', position: `${min.x} ${max.y} ${min.z}` });
+
+      // Label hotspots at edge midpoints
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${(min.x + max.x)/2} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${max.x} ${(min.y + max.y)/2} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${(min.x + max.x)/2} ${max.y} ${min.z}` });
+
+      renderDimensions();
+    }
+
+    product3dViewer.addEventListener('load', () => {
+      setTimeout(setupDimensions, 100);
+    });
+
+    product3dViewer.addEventListener('camera-change', renderDimensions);
 
     document.querySelectorAll('.folder-item').forEach(item => {
       item.addEventListener('click', function(e) {
@@ -652,73 +690,6 @@
     arButton.addEventListener('click', () => {
       product3dViewer.activateAR();
     });
-
-    // Dimension Lines Logic
-    function drawLine(svgLine, dotHotspot1, dotHotspot2, dimensionHotspot) {
-      if (dotHotspot1 && dotHotspot2) {
-        svgLine.setAttribute('x1', dotHotspot1.canvasPosition.x);
-        svgLine.setAttribute('y1', dotHotspot1.canvasPosition.y);
-        svgLine.setAttribute('x2', dotHotspot2.canvasPosition.x);
-        svgLine.setAttribute('y2', dotHotspot2.canvasPosition.y);
-        if (dimensionHotspot &&!dimensionHotspot.facingCamera) {
-          svgLine.classList.add('hide');
-        } else {
-          svgLine.classList.remove('hide');
-        }
-      }
-    }
-
-    function renderDimensions() {
-      const centerPoint = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
-      const xPoint = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-      const yPoint = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-      const zPoint = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
-
-      if (!centerPoint ||!xPoint ||!yPoint ||!zPoint) return;
-
-      const dimX = product3dViewer.queryHotspot('hotspot-dim+X-Y');
-      const dimY = product3dViewer.queryHotspot('hotspot-dim+X-Z');
-      const dimZ = product3dViewer.queryHotspot('hotspot-dim+Y-Z');
-
-      const lines = product3dViewer.querySelectorAll('line');
-
-      if (dimX) {
-        const {x: x1, y: y1, z: z1} = centerPoint.position;
-        const {x: x2, y: y2, z: z2} = xPoint.position;
-        dimX.textContent = `${Math.abs(x1 - x2).toFixed(2)}m`;
-        drawLine(lines[0], centerPoint, xPoint, dimX);
-      }
-
-      if (dimY) {
-        const {y: y1} = centerPoint.position;
-        const {y: y2} = yPoint.position;
-        dimY.textContent = `${Math.abs(y1 - y2).toFixed(2)}m`;
-        drawLine(lines[1], centerPoint, yPoint, dimY);
-      }
-
-      if (dimZ) {
-        const {z: z1} = centerPoint.position;
-        const {z: z2} = zPoint.position;
-        dimZ.textContent = `${Math.abs(z1 - z2).toFixed(2)}m`;
-        drawLine(lines[2], yPoint, zPoint, dimZ);
-      }
-
-      drawLine(lines[3], xPoint, product3dViewer.queryHotspot('hotspot-dot+X-Y-Z'));
-      drawLine(lines[4], zPoint, product3dViewer.queryHotspot('hotspot-dot-X+Y-Z'));
-    }
-
-    product3dViewer.addEventListener('load', () => {
-      const center = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
-      const xNode = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-      const yNode = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-      const zNode = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
-
-      if (center && xNode && yNode && zNode) {
-        renderDimensions();
-      }
-    });
-
-    product3dViewer.addEventListener('camera-change', renderDimensions);
 
     if (history.scrollRestoration) {
       history.scrollRestoration = 'manual';
