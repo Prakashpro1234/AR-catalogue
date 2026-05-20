@@ -511,7 +511,7 @@
   </section>
   <!-- end trending section -->
 
-  <!-- 3D Product Viewer Modal -->
+ <!-- 3D Product Viewer Modal -->
   <div class="product-3d-modal" id="product3dModal">
     <div class="product-3d-container">
       <div class="product-3d-header">
@@ -533,10 +533,11 @@
         alt="3D model"
         style="position: relative;">
 
-        <!-- Invisible dots for line endpoints -->
-        <button slot="hotspot-dot-X" class="dot" data-position="1 0 0"></button>
-        <button slot="hotspot-dot-Y" class="dot" data-position="0 1 0"></button>
-        <button slot="hotspot-dot-Z" class="dot" data-position="0 0 1"></button>
+        <!-- 4 corner hotspots for bounding box edges -->
+        <button slot="hotspot-dot-X-Y-Z" class="dot"></button>
+        <button slot="hotspot-dot+X-Y-Z" class="dot"></button>
+        <button slot="hotspot-dot+X+Y-Z" class="dot"></button>
+        <button slot="hotspot-dot-X+Y-Z" class="dot"></button>
 
         <!-- Grey bubble labels -->
         <button slot="hotspot-dim-X" class="dim"></button>
@@ -544,7 +545,7 @@
         <button slot="hotspot-dim-Z" class="dim"></button>
 
         <!-- Yellow lines -->
-        <svg class="dimensionLineContainer">
+        <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
@@ -783,7 +784,7 @@
   </section>
   <!-- end footer section -->
 
-  <script src="js/jquery-3.4.1.min.js"></script>
+ <script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
   <!-- Google Model Viewer -->
@@ -819,7 +820,7 @@
     menuToggle.addEventListener('click', toggleMenu);
     menuOverlay.addEventListener('click', toggleMenu);
 
-    document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
+    document.querySelectorAll('.slide-menu.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         menuToggle.classList.remove('active');
         slideMenu.classList.remove('active');
@@ -865,116 +866,132 @@
       });
     });
 
-    // 3D Product Viewer Logic with Dimensions
+    // 3D Product Viewer Logic with Dynamic Dimensions
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
     const close3dModal = document.getElementById('close3dModal');
     const arButton = document.getElementById('arButton');
-    const dimLines = product3dViewer.querySelectorAll('.dimensionLine');
+
+    function drawLine(svgLine, dot1, dot2) {
+      if (!dot1 ||!dot2) return;
+      svgLine.setAttribute('x1', dot1.canvasPosition.x);
+      svgLine.setAttribute('y1', dot1.canvasPosition.y);
+      svgLine.setAttribute('x2', dot2.canvasPosition.x);
+      svgLine.setAttribute('y2', dot2.canvasPosition.y);
+    }
 
     function renderDimensions() {
-      const hotspots = [
-        {dot1: 'hotspot-dot-X', dot2: 'hotspot-dot-Y', line: dimLines[0], label: product3dViewer.querySelector('[slot="hotspot-dim-X"]')},
-        {dot1: 'hotspot-dot-Y', dot2: 'hotspot-dot-Z', line: dimLines[1], label: product3dViewer.querySelector('[slot="hotspot-dim-Y"]')},
-        {dot1: 'hotspot-dot-Z', dot2: 'hotspot-dot-X', line: dimLines[2], label: product3dViewer.querySelector('[slot="hotspot-dim-Z"]')}
-  ];
+      const lines = product3dViewer.querySelectorAll('.dimensionLine');
+      const dims = product3dViewer.querySelectorAll('.dim');
 
-  hotspots.forEach(h => {
-    const dot1 = product3dViewer.queryHotspot(h.dot1);
-    const dot2 = product3dViewer.queryHotspot(h.dot2);
+      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const minXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
 
-    if (!dot1 ||!dot2 || dot1.hidden || dot2.hidden) {
-      h.line.classList.add('hide');
-      h.label.classList.add('hide');
-      return;
-    }
-    h.line.classList.remove('hide');
-    h.label.classList.remove('hide');
+      const dimLength = product3dViewer.queryHotspot('hotspot-dim-X');
+      const dimHeight = product3dViewer.queryHotspot('hotspot-dim-Y');
+      const dimBreadth = product3dViewer.queryHotspot('hotspot-dim-Z');
 
-    const rect = product3dViewer.getBoundingClientRect();
-    const dot1Rect = dot1.getBoundingClientRect();
-    const dot2Rect = dot2.getBoundingClientRect();
+      if (!minXminYminZ ||!maxXminYminZ ||!maxXmaxYminZ) {
+        lines.forEach(l => l.classList.add('hide'));
+        dims.forEach(d => d.classList.add('hide'));
+        return;
+      }
 
-    const x1 = dot1Rect.x + dot1Rect.width/2 - rect.x;
-    const y1 = dot1Rect.y + dot1Rect.height/2 - rect.y;
-    const x2 = dot2Rect.x + dot2Rect.width/2 - rect.x;
-    const y2 = dot2Rect.y + dot2Rect.height/2 - rect.y;
+      lines.forEach(l => l.classList.remove('hide'));
+      dims.forEach(d => d.classList.remove('hide'));
 
-    h.line.setAttribute('x1', x1);
-    h.line.setAttribute('y1', y1);
-    h.line.setAttribute('x2', x2);
-    h.line.setAttribute('y2', y2);
+      // Length = X axis
+      if (dimLength && minXminYminZ && maxXminYminZ) {
+        const dist = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
+        dimLength.textContent = `Length: ${dist.toFixed(1)}"`;
+        drawLine(lines[0], minXminYminZ, maxXminYminZ);
+      }
 
-    // Center grey bubble on line
-    h.label.style.left = `${(x1 + x2) / 2}px`;
-    h.label.style.top = `${(y1 + y2) / 2}px`;
-  });
-}
+      // Height = Y axis
+      if (dimHeight && maxXminYminZ && maxXmaxYminZ) {
+        const dist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
+        dimHeight.textContent = `Height: ${dist.toFixed(1)}"`;
+        drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
+      }
 
-product3dViewer.addEventListener('load', () => {
-  const center = product3dViewer.getBoundingBoxCenter();
-  const size = product3dViewer.getDimensions();
-  const x2 = size.x / 2;
-  const y2 = size.y / 2;
-  const z2 = size.z / 2;
-
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X', position: `${center.x + x2} ${center.y} ${center.z}` });
-  product3dViewer.querySelector('[slot="hotspot-dim-X"]').textContent = `${(size.x * 39.3701).toFixed(1)} in`;
-
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-Y', position: `${center.x} ${center.y + y2} ${center.z}` });
-  product3dViewer.querySelector('[slot="hotspot-dim-Y"]').textContent = `${(size.y * 39.3701).toFixed(1)} in`;
-
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-Z', position: `${center.x} ${center.y} ${center.z + z2}` });
-  product3dViewer.querySelector('[slot="hotspot-dim-Z"]').textContent = `${(size.z * 39.3701).toFixed(1)} in`;
-
-  renderDimensions();
-});
-
-product3dViewer.addEventListener('camera-change', renderDimensions);
-
-document.querySelectorAll('.folder-item').forEach(item => {
-  item.addEventListener('click', function(e) {
-    e.preventDefault();
-    const productName = this.getAttribute('data-product-name') || 'Product';
-    const modelUrl = this.getAttribute('data-model') || '';
-
-    if (!modelUrl) {
-      alert('3D model coming soon for ' + productName);
-      return;
+      // Breadth = Z axis
+      if (dimBreadth && maxXmaxYminZ && minXmaxYminZ) {
+        const dist = Math.abs(maxXmaxYminZ.position.x - minXmaxYminZ.position.x) * 39.37;
+        dimBreadth.textContent = `Breadth: ${dist.toFixed(1)}"`;
+        drawLine(lines[2], maxXmaxYminZ, minXmaxYminZ);
+      }
     }
 
-    product3dTitle.textContent = productName;
-    product3dViewer.src = modelUrl;
-    product3dModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-});
+    function setupDimensions() {
+      const bbox = product3dViewer.getBoundingBox();
+      const min = bbox.min;
+      const max = bbox.max;
 
-close3dModal.addEventListener('click', () => {
-  product3dModal.classList.remove('active');
-  document.body.style.overflow = '';
-  product3dViewer.src = '';
-});
+      // 4 corner hotspots for 3 edges
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y-Z', position: `${min.x} ${max.y} ${min.z}` });
 
-product3dModal.addEventListener('click', (e) => {
-  if (e.target === product3dModal) {
-    product3dModal.classList.remove('active');
-    document.body.style.overflow = '';
-    product3dViewer.src = '';
-  }
-});
+      // Label hotspots at edge midpoints
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${(min.x + max.x)/2} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${max.x} ${(min.y + max.y)/2} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${(min.x + max.x)/2} ${max.y} ${min.z}` });
 
-arButton.addEventListener('click', () => {
-  product3dViewer.activateAR();
-});
+      renderDimensions();
+    }
 
-if (history.scrollRestoration) {
-  history.scrollRestoration = 'manual';
-}
-window.onbeforeunload = function () {
-  window.scrollTo(0, 0);
-}
+    product3dViewer.addEventListener('load', () => {
+      setTimeout(setupDimensions, 100);
+    });
+
+    product3dViewer.addEventListener('camera-change', renderDimensions);
+
+    document.querySelectorAll('.folder-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productName = this.getAttribute('data-product-name') || 'Product';
+        const modelUrl = this.getAttribute('data-model') || '';
+
+        if (!modelUrl) {
+          alert('3D model coming soon for ' + productName);
+          return;
+        }
+
+        product3dTitle.textContent = productName;
+        product3dViewer.src = modelUrl;
+        product3dModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    close3dModal.addEventListener('click', () => {
+      product3dModal.classList.remove('active');
+      document.body.style.overflow = '';
+      product3dViewer.src = '';
+    });
+
+    product3dModal.addEventListener('click', (e) => {
+      if (e.target === product3dModal) {
+        product3dModal.classList.remove('active');
+        document.body.style.overflow = '';
+        product3dViewer.src = '';
+      }
+    });
+
+    arButton.addEventListener('click', () => {
+      product3dViewer.activateAR();
+    });
+
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
+    }
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    }
   </script>
 </body>
 </html>
