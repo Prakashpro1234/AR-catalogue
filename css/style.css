@@ -1000,3 +1000,49 @@ a:focus {
 .info_form {
   display: none !important;
 }
+/* Center logo + welcome text for home page header only */
+.nav-center-brand {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+  z-index: 1001;
+}
+
+.nav-center-brand img {
+  height: 38px;
+  width: auto;
+}
+
+.nav-center-brand span {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Mobile: hide text, keep logo only */
+@media (max-width: 768px) {
+  .nav-center-brand span {
+    display: none;
+  }
+  .nav-center-brand img {
+    height: 32px;
+  }
+}
+
+@media (max-width: 576px) {
+  .nav-center-brand img {
+    height: 28px;
+  }
+  .nav-center-brand {
+    gap: 8px;
+  }
+}
