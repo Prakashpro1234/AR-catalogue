@@ -1238,3 +1238,138 @@ a:focus {
     gap: 15px;
   }
 }
+
+/* 3D Product Viewer Modal */
+.product-3d-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 10001;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.product-3d-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.product-3d-container {
+  width: 100%;
+  max-width: 900px;
+  background: var(--white);
+  border-radius: 20px;
+  overflow: hidden;
+  transform: scale(0.9);
+  transition: transform 0.3s ease;
+}
+
+.product-3d-modal.active .product-3d-container {
+  transform: scale(1);
+}
+
+.product-3d-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 2px solid var(--accent);
+  background: var(--light);
+}
+
+.product-3d-header h3 {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.close-3d {
+  width: 35px;
+  height: 35px;
+  border: none;
+  background: var(--primary);
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  transition: all 0.3s;
+}
+
+.close-3d:hover {
+  background: var(--accent);
+  transform: rotate(90deg);
+}
+
+model-viewer {
+  width: 100%;
+  height: 60vh;
+  background-color: #f5f5f5;
+  --poster-color: transparent;
+}
+
+.product-3d-actions {
+  display: flex;
+  gap: 15px;
+  padding: 20px 25px;
+  background: var(--light);
+}
+
+.product-3d-actions a,
+.product-3d-actions button {
+  flex: 1;
+  padding: 14px;
+  text-align: center;
+  border-radius: 8px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 14px;
+  transition: all 0.3s;
+  border: 2px solid;
+  cursor: pointer;
+}
+
+.btn-quote {
+  background: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.btn-quote:hover {
+  background: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: var(--white);
+}
+
+.btn-ar {
+  background: var(--accent);
+  color: var(--dark);
+  border-color: var(--accent);
+}
+
+.btn-ar:hover {
+  background: #c9a031;
+  border-color: #c9a031;
+}
+
+@media (max-width: 576px) {
+  model-viewer {
+    height: 50vh;
+  }
+  .product-3d-actions {
+    flex-direction: column;
+  }
+}
