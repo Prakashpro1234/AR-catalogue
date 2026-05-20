@@ -22,16 +22,23 @@
     <!-- header section starts -->
     <header class="header_section">
       <div class="container-fluid">
-        <nav class="custom_nav-container">
-          <a class="navbar-brand" href="index.html">
-            <img src="images/logo.svg" alt="Home" />
-          </a>
-          
-          <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+     <nav class="custom_nav-container">
+  <a class="navbar-brand" href="index.html">
+    <img src="images/logo.svg" alt="Home" />
+  </a>
+  
+  <!-- Add ONLY this block in index.html -->
+  <div class="nav-center-brand">
+    <img src="images/company-logo.svg" alt="Logo" />
+    <span>Welcome to AR Catalogue</span>
+  </div>
+  
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <!-- rest of your existing menu code stays 100% same -->
 
           <div class="slide-menu" id="slideMenu">
             <div class="menu-overlay" id="menuOverlay"></div>
