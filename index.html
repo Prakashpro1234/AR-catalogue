@@ -533,18 +533,22 @@
         alt="3D model"
         style="position: relative;">
 
-        <!-- 4 corner hotspots for bounding box edges -->
+        <!-- All 8 corners of bounding box -->
         <button slot="hotspot-dot-X-Y-Z" class="dot"></button>
         <button slot="hotspot-dot+X-Y-Z" class="dot"></button>
         <button slot="hotspot-dot+X+Y-Z" class="dot"></button>
         <button slot="hotspot-dot-X+Y-Z" class="dot"></button>
+        <button slot="hotspot-dot-X-Y+Z" class="dot"></button>
+        <button slot="hotspot-dot+X-Y+Z" class="dot"></button>
+        <button slot="hotspot-dot+X+Y+Z" class="dot"></button>
+        <button slot="hotspot-dot-X+Y+Z" class="dot"></button>
 
-        <!-- Grey bubble labels -->
+        <!-- 3 dimension labels -->
         <button slot="hotspot-dim-X" class="dim"></button>
         <button slot="hotspot-dim-Y" class="dim"></button>
         <button slot="hotspot-dim-Z" class="dim"></button>
 
-        <!-- Yellow lines -->
+        <!-- 3 lines -->
         <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
@@ -784,7 +788,7 @@
   </section>
   <!-- end footer section -->
 
- <script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
   <!-- Google Model Viewer -->
@@ -874,55 +878,11 @@
     const arButton = document.getElementById('arButton');
 
     function drawLine(svgLine, dot1, dot2) {
-      if (!dot1 ||!dot2) return;
+      if (!dot1 ||!dot2 ||!dot1.canvasPosition ||!dot2.canvasPosition) return;
       svgLine.setAttribute('x1', dot1.canvasPosition.x);
       svgLine.setAttribute('y1', dot1.canvasPosition.y);
       svgLine.setAttribute('x2', dot2.canvasPosition.x);
       svgLine.setAttribute('y2', dot2.canvasPosition.y);
-    }
-
-    function renderDimensions() {
-      const lines = product3dViewer.querySelectorAll('.dimensionLine');
-      const dims = product3dViewer.querySelectorAll('.dim');
-
-      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-      const minXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
-
-      const dimLength = product3dViewer.queryHotspot('hotspot-dim-X');
-      const dimHeight = product3dViewer.queryHotspot('hotspot-dim-Y');
-      const dimBreadth = product3dViewer.queryHotspot('hotspot-dim-Z');
-
-      if (!minXminYminZ ||!maxXminYminZ ||!maxXmaxYminZ) {
-        lines.forEach(l => l.classList.add('hide'));
-        dims.forEach(d => d.classList.add('hide'));
-        return;
-      }
-
-      lines.forEach(l => l.classList.remove('hide'));
-      dims.forEach(d => d.classList.remove('hide'));
-
-      // Length = X axis
-      if (dimLength && minXminYminZ && maxXminYminZ) {
-        const dist = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
-        dimLength.textContent = `Length: ${dist.toFixed(1)}"`;
-        drawLine(lines[0], minXminYminZ, maxXminYminZ);
-      }
-
-      // Height = Y axis
-      if (dimHeight && maxXminYminZ && maxXmaxYminZ) {
-        const dist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
-        dimHeight.textContent = `Height: ${dist.toFixed(1)}"`;
-        drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
-      }
-
-      // Breadth = Z axis
-      if (dimBreadth && maxXmaxYminZ && minXmaxYminZ) {
-        const dist = Math.abs(maxXmaxYminZ.position.x - minXmaxYminZ.position.x) * 39.37;
-        dimBreadth.textContent = `Breadth: ${dist.toFixed(1)}"`;
-        drawLine(lines[2], maxXmaxYminZ, minXmaxYminZ);
-      }
     }
 
     function setupDimensions() {
@@ -930,18 +890,60 @@
       const min = bbox.min;
       const max = bbox.max;
 
-      // 4 corner hotspots for 3 edges
+      // All 8 corners
       product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y-Z', position: `${min.x} ${max.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y+Z', position: `${min.x} ${min.y} ${max.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y+Z', position: `${max.x} ${max.y} ${max.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y+Z', position: `${min.x} ${max.y} ${max.z}` });
 
       // Label hotspots at edge midpoints
       product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${(min.x + max.x)/2} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${max.x} ${(min.y + max.y)/2} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${(min.x + max.x)/2} ${max.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${max.x} ${min.y} ${(min.z + max.z)/2}` });
 
-      renderDimensions();
+      // Wait 1 frame for canvasPosition to update
+      requestAnimationFrame(renderDimensions);
+    }
+
+    function renderDimensions() {
+      const lines = product3dViewer.querySelectorAll('.dimensionLine');
+
+      // Get corner dots
+      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+
+      const dimLength = product3dViewer.queryHotspot('hotspot-dim-X');
+      const dimHeight = product3dViewer.queryHotspot('hotspot-dim-Y');
+      const dimBreadth = product3dViewer.queryHotspot('hotspot-dim-Z');
+
+      if (!minXminYminZ ||!maxXminYminZ ||!maxXmaxYminZ ||!maxXminYmaxZ) {
+        requestAnimationFrame(renderDimensions);
+        return;
+      }
+
+      lines.forEach(l => l.classList.remove('hide'));
+      document.querySelectorAll('.dim').forEach(d => d.classList.remove('hide'));
+
+      // Length = X axis
+      const lengthDist = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
+      dimLength.textContent = `Length: ${lengthDist.toFixed(1)}"`;
+      drawLine(lines[0], minXminYminZ, maxXminYminZ);
+
+      // Height = Y axis
+      const heightDist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
+      dimHeight.textContent = `Height: ${heightDist.toFixed(1)}"`;
+      drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
+
+      // Breadth = Z axis
+      const breadthDist = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
+      dimBreadth.textContent = `Breadth: ${breadthDist.toFixed(1)}"`;
+      drawLine(lines[2], maxXminYminZ, maxXminYmaxZ);
     }
 
     product3dViewer.addEventListener('load', () => {
