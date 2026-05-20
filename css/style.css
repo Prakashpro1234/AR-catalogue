@@ -1418,4 +1418,8 @@ model-viewer {
   display: none; 
 }
 
-/* Make sure modal content can
+/* Make sure modal content can contain absolute elements */
+.product-3d-container {
+  position: relative;
+  overflow: hidden;
+}
