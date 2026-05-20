@@ -15,6 +15,36 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
+
+  <style>
+  /* 3D Dimension Lines */
+ .dimensionLineContainer {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+ .dimensionLine {
+    stroke: #FFC107;
+    stroke-width: 3;
+  }
+ .dim {
+    background: rgba(240, 240, 240, 0.95);
+    color: #000;
+    border-radius: 12px;
+    border: 1px solid #FFC107;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    transform: translate3d(-50%, -50%, 0);
+    pointer-events: none;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    position: absolute;
+    white-space: nowrap;
+  }
+ .hide { display: none; }
+ .dot { display: none; }
+  </style>
 </head>
 
 <body>
@@ -26,18 +56,18 @@
   <a class="navbar-brand" href="index.html">
     <img src="images/logo.svg" alt="Home" />
   </a>
-       
+
   <div class="nav-center-brand">
     <img src="images/company-logo.svg" alt="Logo" />
     <span>VENUS k EQUIPMENTS - AR Catalogue</span>
   </div>
-  
+
   <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
     <span></span>
     <span></span>
     <span></span>
   </button>
-       
+
           <div class="slide-menu" id="slideMenu">
             <div class="menu-overlay" id="menuOverlay"></div>
             <div class="menu-content">
@@ -68,7 +98,7 @@
       </div>
     </header>
     <!-- end header section -->
-    
+
     <!-- slider section -->
     <section class="slider_section">
       <div class="play_btn">
@@ -125,12 +155,14 @@
                       <a href="contact.html" class="btn-2">Contact us</a>
                     </div>
                   </div>
+                </div>
                 <div class="col-md-6 img-container">
                   <div class="img-box animate-slide delay-3">
                     <img src="images/slider-img.png" alt="Custom Kitchen Equipment">
                   </div>
                 </div>
               </div>
+            </div>
             <div class="carousel-item">
               <div class="row">
                 <div class="col-md-6">
@@ -154,6 +186,7 @@
                   </div>
                 </div>
               </div>
+            </div>
             <div class="carousel-item">
               <div class="row">
                 <div class="col-md-6">
@@ -184,7 +217,7 @@
     </section>
     <!-- end slider section -->
   </div>
-    
+
   <!-- about section -->
   <section class="about_section layout_padding">
     <div class="container">
@@ -216,7 +249,7 @@
       <div class="heading_container">
         <h2>Product via Working Area</h2>
       </div>
-      
+
       <div class="working-area-folders">
         <!-- Folder 01: Live Cooking -->
         <div class="folder-box" data-folder="1">
@@ -393,7 +426,6 @@
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
-              <img src="images/slider-img.png" alt="">
             </div>
             <h5>Veg Cutting</h5>
           </div>
@@ -412,7 +444,6 @@
         <div class="folder-box" data-folder="8">
           <div class="folder-preview">
             <div class="folder-icon">
-              <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
@@ -474,7 +505,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="folder-backdrop"></div>
     </div>
   </section>
@@ -487,21 +518,39 @@
         <h3 id="product3dTitle">Product Name</h3>
         <button class="close-3d" id="close3dModal">×</button>
       </div>
-      
-      <model-viewer 
+
+      <model-viewer
         id="product3dViewer"
         src=""
-        ar 
+        ar
         ar-modes="webxr scene-viewer quick-look"
-        camera-controls 
-        auto-rotate 
+        camera-controls
+        auto-rotate
         rotation-per-second="30deg"
         shadow-intensity="1"
         exposure="1"
         environment-image="neutral"
-        alt="3D model">
+        alt="3D model"
+        style="position: relative;">
+
+        <!-- Invisible dots for line endpoints -->
+        <button slot="hotspot-dot-X" class="dot" data-position="1 0 0"></button>
+        <button slot="hotspot-dot-Y" class="dot" data-position="0 1 0"></button>
+        <button slot="hotspot-dot-Z" class="dot" data-position="0 0 1"></button>
+
+        <!-- Grey bubble labels -->
+        <button slot="hotspot-dim-X" class="dim"></button>
+        <button slot="hotspot-dim-Y" class="dim"></button>
+        <button slot="hotspot-dim-Z" class="dim"></button>
+
+        <!-- Yellow lines -->
+        <svg class="dimensionLineContainer">
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+        </svg>
       </model-viewer>
-      
+
       <div class="product-3d-actions">
         <a href="contact.html" class="btn-quote">Get Quote</a>
         <button class="btn-ar" id="arButton">View in AR</button>
@@ -574,6 +623,7 @@
             </div>
           </a>
         </div>
+      </div>
       <a href="furniture.html" class="brand-btn">See More</a>
     </div>
   </section>
@@ -599,12 +649,12 @@
         <div class="col-md-6">
           <div class="map_container">
             <div class="map-responsive">
-              <iframe 
+              <iframe
                   src="https://www.google.com/maps/embed/v1/place?key=AIzaSyA0s1a7phLN0iaD6-UE7m4qP-z21pH0eSc&q=No+L12+13,+Sidco+1st+Main+Rd,+Kodungaiyur,+Chennai+600118"
-                  width="600" 
-                  height="300" 
-                  frameborder="0" 
-                  style="border:0; width: 100%; height:100%" 
+                  width="600"
+                  height="300"
+                  frameborder="0"
+                  style="border:0; width: 100%; height:100%"
                   allowfullscreen
                   loading="lazy">
                 </iframe>
@@ -622,7 +672,6 @@
       <div class="heading_container">
         <h2>Testimonial</h2>
       </div>
-    </div>
     <div class="container">
       <div class="client_container layout_padding2">
         <div class="client_box b-1">
@@ -678,11 +727,13 @@
               <p>sales@vceindia.com</p>
             </div>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_info">
             <h5>Informations</h5>
             <p>Venus delivers stainless steel kitchen solutions engineered for durability, hygiene, and performance.</p>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_insta">
             <h5>Instagram</h5>
@@ -701,6 +752,7 @@
               </div>
             </div>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_form">
             <h5>Newsletter</h5>
@@ -736,7 +788,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
   <!-- Google Model Viewer -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
-  
+
   <script>
     // Owl Carousel init
     $(".owl-carousel").owlCarousel({
@@ -757,16 +809,16 @@
     const menuToggle = document.getElementById('menuToggle');
     const slideMenu = document.getElementById('slideMenu');
     const menuOverlay = document.getElementById('menuOverlay');
-    
+
     function toggleMenu() {
       menuToggle.classList.toggle('active');
       slideMenu.classList.toggle('active');
-      document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
+      document.body.style.overflow = slideMenu.classList.contains('active')? 'hidden' : '';
     }
-    
+
     menuToggle.addEventListener('click', toggleMenu);
     menuOverlay.addEventListener('click', toggleMenu);
-    
+
     document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
       link.addEventListener('click', () => {
         menuToggle.classList.remove('active');
@@ -774,7 +826,7 @@
         document.body.style.overflow = '';
       });
     });
-    
+
     // Search form - redirects to furniture.html
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -783,85 +835,146 @@
         window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
       }
     });
-    
+
     // Android Folder System
     document.addEventListener('DOMContentLoaded', function() {
       const folders = document.querySelectorAll('.folder-box');
       const backdrop = document.querySelector('.folder-backdrop');
-      
+
       folders.forEach(folder => {
         const preview = folder.querySelector('.folder-preview');
         const closeBtn = folder.querySelector('.close-folder');
-        
+
         preview.addEventListener('click', () => {
           folder.classList.add('active');
           backdrop.classList.add('active');
           document.body.style.overflow = 'hidden';
         });
-        
+
         closeBtn.addEventListener('click', () => {
           folder.classList.remove('active');
           backdrop.classList.remove('active');
           document.body.style.overflow = '';
         });
       });
-      
+
       backdrop.addEventListener('click', () => {
         document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
         backdrop.classList.remove('active');
         document.body.style.overflow = '';
       });
     });
-    
-    // 3D Product Viewer Logic
+
+    // 3D Product Viewer Logic with Dimensions
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
     const close3dModal = document.getElementById('close3dModal');
     const arButton = document.getElementById('arButton');
-    
-    document.querySelectorAll('.folder-item').forEach(item => {
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        const productName = this.getAttribute('data-product-name') || 'Product';
-        const modelUrl = this.getAttribute('data-model') || '';
-        
-        if (!modelUrl) {
-          alert('3D model coming soon for ' + productName);
-          return;
-        }
-        
-        product3dTitle.textContent = productName;
-        product3dViewer.src = modelUrl;
-        product3dModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-    
-    close3dModal.addEventListener('click', () => {
-      product3dModal.classList.remove('active');
-      document.body.style.overflow = '';
-      product3dViewer.src = '';
-    });
-    
-    product3dModal.addEventListener('click', (e) => {
-      if (e.target === product3dModal) {
-        product3dModal.classList.remove('active');
-        document.body.style.overflow = '';
-        product3dViewer.src = '';
-      }
-    });
-    
-    arButton.addEventListener('click', () => {
-      product3dViewer.activateAR();
-    });
-    
-    if (history.scrollRestoration) {
-      history.scrollRestoration = 'manual';
+    const dimLines = product3dViewer.querySelectorAll('.dimensionLine');
+
+    function renderDimensions() {
+      const hotspots = [
+        {dot1: 'hotspot-dot-X', dot2: 'hotspot-dot-Y', line: dimLines[0], label: product3dViewer.querySelector('[slot="hotspot-dim-X"]')},
+        {dot1: 'hotspot-dot-Y', dot2: 'hotspot-dot-Z', line: dimLines[1], label: product3dViewer.querySelector('[slot="hotspot-dim-Y"]')},
+        {dot1: 'hotspot-dot-Z', dot2: 'hotspot-dot-X', line: dimLines[2], label: product3dViewer.querySelector('[slot="hotspot-dim-Z"]')}
+  ];
+
+  hotspots.forEach(h => {
+    const dot1 = product3dViewer.queryHotspot(h.dot1);
+    const dot2 = product3dViewer.queryHotspot(h.dot2);
+
+    if (!dot1 ||!dot2 || dot1.hidden || dot2.hidden) {
+      h.line.classList.add('hide');
+      h.label.classList.add('hide');
+      return;
     }
-    window.onbeforeunload = function () {
-      window.scrollTo(0, 0);
+    h.line.classList.remove('hide');
+    h.label.classList.remove('hide');
+
+    const rect = product3dViewer.getBoundingClientRect();
+    const dot1Rect = dot1.getBoundingClientRect();
+    const dot2Rect = dot2.getBoundingClientRect();
+
+    const x1 = dot1Rect.x + dot1Rect.width/2 - rect.x;
+    const y1 = dot1Rect.y + dot1Rect.height/2 - rect.y;
+    const x2 = dot2Rect.x + dot2Rect.width/2 - rect.x;
+    const y2 = dot2Rect.y + dot2Rect.height/2 - rect.y;
+
+    h.line.setAttribute('x1', x1);
+    h.line.setAttribute('y1', y1);
+    h.line.setAttribute('x2', x2);
+    h.line.setAttribute('y2', y2);
+
+    // Center grey bubble on line
+    h.label.style.left = `${(x1 + x2) / 2}px`;
+    h.label.style.top = `${(y1 + y2) / 2}px`;
+  });
+}
+
+product3dViewer.addEventListener('load', () => {
+  const center = product3dViewer.getBoundingBoxCenter();
+  const size = product3dViewer.getDimensions();
+  const x2 = size.x / 2;
+  const y2 = size.y / 2;
+  const z2 = size.z / 2;
+
+  product3dViewer.updateHotspot({ name: 'hotspot-dot-X', position: `${center.x + x2} ${center.y} ${center.z}` });
+  product3dViewer.querySelector('[slot="hotspot-dim-X"]').textContent = `${(size.x * 39.3701).toFixed(1)} in`;
+
+  product3dViewer.updateHotspot({ name: 'hotspot-dot-Y', position: `${center.x} ${center.y + y2} ${center.z}` });
+  product3dViewer.querySelector('[slot="hotspot-dim-Y"]').textContent = `${(size.y * 39.3701).toFixed(1)} in`;
+
+  product3dViewer.updateHotspot({ name: 'hotspot-dot-Z', position: `${center.x} ${center.y} ${center.z + z2}` });
+  product3dViewer.querySelector('[slot="hotspot-dim-Z"]').textContent = `${(size.z * 39.3701).toFixed(1)} in`;
+
+  renderDimensions();
+});
+
+product3dViewer.addEventListener('camera-change', renderDimensions);
+
+document.querySelectorAll('.folder-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const productName = this.getAttribute('data-product-name') || 'Product';
+    const modelUrl = this.getAttribute('data-model') || '';
+
+    if (!modelUrl) {
+      alert('3D model coming soon for ' + productName);
+      return;
     }
+
+    product3dTitle.textContent = productName;
+    product3dViewer.src = modelUrl;
+    product3dModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+});
+
+close3dModal.addEventListener('click', () => {
+  product3dModal.classList.remove('active');
+  document.body.style.overflow = '';
+  product3dViewer.src = '';
+});
+
+product3dModal.addEventListener('click', (e) => {
+  if (e.target === product3dModal) {
+    product3dModal.classList.remove('active');
+    document.body.style.overflow = '';
+    product3dViewer.src = '';
+  }
+});
+
+arButton.addEventListener('click', () => {
+  product3dViewer.activateAR();
+});
+
+if (history.scrollRestoration) {
+  history.scrollRestoration = 'manual';
+}
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+}
   </script>
 </body>
 </html>
