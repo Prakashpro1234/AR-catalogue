@@ -1373,3 +1373,49 @@ model-viewer {
     flex-direction: column;
   }
 }
+
+/* ===== 3D Model Dimension Lines ===== */
+.product-3d-container model-viewer {
+  position: relative;
+}
+
+.dimensionLineContainer {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dimensionLine {
+  stroke: #FFC107; /* Solid yellow */
+  stroke-width: 3;
+}
+
+.dim {
+  background: rgba(240, 240, 240, 0.95); /* Light grey bubble */
+  color: #000;
+  border-radius: 12px; /* Round padding */
+  border: 1px solid #FFC107;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  transform: translate3d(-50%, -50%, 0);
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  position: absolute;
+  white-space: nowrap;
+  z-index: 2;
+}
+
+.hide { 
+  display: none; 
+}
+
+.dot { 
+  display: none; 
+}
+
+/* Make sure modal content can
