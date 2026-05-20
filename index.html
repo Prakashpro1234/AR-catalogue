@@ -18,17 +18,18 @@
 
   <style>
   /* 3D Dimension Lines */
- .dimensionLineContainer {
+.dimensionLineContainer {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
+    z-index: 10;
   }
- .dimensionLine {
+.dimensionLine {
     stroke: #FFC107;
     stroke-width: 3;
   }
- .dim {
+.dim {
     background: rgba(240, 240, 240, 0.95);
     color: #000;
     border-radius: 12px;
@@ -41,9 +42,14 @@
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     position: absolute;
     white-space: nowrap;
+    z-index: 11;
   }
- .hide { display: none; }
- .dot { display: none; }
+.hide { display: none; }
+.dot { display: none; }
+
+ model-viewer {
+   position: relative;
+ }
   </style>
 </head>
 
