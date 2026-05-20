@@ -108,6 +108,7 @@
                   </div>
                 </div>
               </div>
+            </div>
             <div class="carousel-item">
               <div class="row">
                 <div class="col-md-6">
@@ -124,7 +125,6 @@
                       <a href="contact.html" class="btn-2">Contact us</a>
                     </div>
                   </div>
-                </div>
                 <div class="col-md-6 img-container">
                   <div class="img-box animate-slide delay-3">
                     <img src="images/slider-img.png" alt="Custom Kitchen Equipment">
@@ -154,7 +154,6 @@
                   </div>
                 </div>
               </div>
-            </div>
             <div class="carousel-item">
               <div class="row">
                 <div class="col-md-6">
@@ -236,19 +235,19 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Electric Oil Kadai" data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb">
                 <img src="images/t-1.jpg" alt="">
                 <span>Electric Oil Kadai</span>
               </a>
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Hot Plate" data-model="">
                 <img src="images/t-2.jpg" alt="">
                 <span>Hot Plate</span>
               </a>
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Gas Range" data-model="">
                 <img src="images/t-3.jpg" alt="">
                 <span>Gas Range</span>
               </a>
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Tandoor" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Tandoor</span>
               </a>
@@ -273,11 +272,11 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Stall Counter" data-model="">
                 <img src="images/t-3.jpg" alt="">
                 <span>Stall Counter</span>
               </a>
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Parcel Table" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Parcel Table</span>
               </a>
@@ -302,11 +301,11 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Juice Counter" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Juice Counter</span>
               </a>
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Chat Stall" data-model="">
                 <img src="images/t-1.jpg" alt="">
                 <span>Chat Stall</span>
               </a>
@@ -331,11 +330,11 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Plate Rack" data-model="">
                 <img src="images/t-1.jpg" alt="">
                 <span>Plate Rack</span>
               </a>
-              <a href="#" class="folder-item">
+              <a href="#" class="folder-item" data-product-name="Wash Sink" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Wash Sink</span>
               </a>
@@ -481,6 +480,35 @@
   </section>
   <!-- end trending section -->
 
+  <!-- 3D Product Viewer Modal -->
+  <div class="product-3d-modal" id="product3dModal">
+    <div class="product-3d-container">
+      <div class="product-3d-header">
+        <h3 id="product3dTitle">Product Name</h3>
+        <button class="close-3d" id="close3dModal">×</button>
+      </div>
+      
+      <model-viewer 
+        id="product3dViewer"
+        src=""
+        ar 
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls 
+        auto-rotate 
+        rotation-per-second="30deg"
+        shadow-intensity="1"
+        exposure="1"
+        environment-image="neutral"
+        alt="3D model">
+      </model-viewer>
+      
+      <div class="product-3d-actions">
+        <a href="contact.html" class="btn-quote">Get Quote</a>
+        <button class="btn-ar" id="arButton">View in AR</button>
+      </div>
+    </div>
+  </div>
+
   <!-- discount section -->
   <section class="discount_section layout_padding">
     <div class="container">
@@ -546,7 +574,6 @@
             </div>
           </a>
         </div>
-      </div>
       <a href="furniture.html" class="brand-btn">See More</a>
     </div>
   </section>
@@ -618,7 +645,6 @@
               <h5>Mr.Parthiban</h5>
               <p>Nithya Amirtham Foods Pvt ltd</p>
             </div>
-          </div>
           <div class="detail">
             <p>“The custom burner ranges and work tables perfectly fit our workflow. Reliable and professional service.”</p>
             <div><div class="arrow_img"></div></div>
@@ -652,13 +678,11 @@
               <p>sales@vceindia.com</p>
             </div>
           </div>
-        </div>
         <div class="col-md-3">
           <div class="info_info">
             <h5>Informations</h5>
             <p>Venus delivers stainless steel kitchen solutions engineered for durability, hygiene, and performance.</p>
           </div>
-        </div>
         <div class="col-md-3">
           <div class="info_insta">
             <h5>Instagram</h5>
@@ -677,7 +701,6 @@
               </div>
             </div>
           </div>
-        </div>
         <div class="col-md-3">
           <div class="info_form">
             <h5>Newsletter</h5>
@@ -711,6 +734,8 @@
   <script src="js/jquery-3.4.1.min.js"></script>
   <script src="js/bootstrap.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
+  <!-- Google Model Viewer -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
   
   <script>
     // Owl Carousel init
@@ -742,7 +767,6 @@
     menuToggle.addEventListener('click', toggleMenu);
     menuOverlay.addEventListener('click', toggleMenu);
     
-    // Close menu when clicking a link
     document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
       link.addEventListener('click', () => {
         menuToggle.classList.remove('active');
@@ -789,7 +813,49 @@
       });
     });
     
-    // Force scroll to top on refresh
+    // 3D Product Viewer Logic
+    const product3dModal = document.getElementById('product3dModal');
+    const product3dViewer = document.getElementById('product3dViewer');
+    const product3dTitle = document.getElementById('product3dTitle');
+    const close3dModal = document.getElementById('close3dModal');
+    const arButton = document.getElementById('arButton');
+    
+    document.querySelectorAll('.folder-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productName = this.getAttribute('data-product-name') || 'Product';
+        const modelUrl = this.getAttribute('data-model') || '';
+        
+        if (!modelUrl) {
+          alert('3D model coming soon for ' + productName);
+          return;
+        }
+        
+        product3dTitle.textContent = productName;
+        product3dViewer.src = modelUrl;
+        product3dModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    
+    close3dModal.addEventListener('click', () => {
+      product3dModal.classList.remove('active');
+      document.body.style.overflow = '';
+      product3dViewer.src = '';
+    });
+    
+    product3dModal.addEventListener('click', (e) => {
+      if (e.target === product3dModal) {
+        product3dModal.classList.remove('active');
+        document.body.style.overflow = '';
+        product3dViewer.src = '';
+      }
+    });
+    
+    arButton.addEventListener('click', () => {
+      product3dViewer.activateAR();
+    });
+    
     if (history.scrollRestoration) {
       history.scrollRestoration = 'manual';
     }
