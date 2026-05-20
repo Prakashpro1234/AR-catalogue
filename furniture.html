@@ -27,7 +27,7 @@
           <a class="navbar-brand" href="index.html">
             <img src="images/logo.svg" alt="Home" />
           </a>
-          
+
           <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">
             <span></span>
             <span></span>
@@ -72,7 +72,7 @@
       <div class="heading_container">
         <h2>Product Categories</h2>
       </div>
-      
+
       <div class="working-area-folders" id="products-list">
         <!-- Folder 01: Live Cooking -->
         <div class="folder-box" data-folder="1">
@@ -354,7 +354,7 @@
           </div>
         </div>
       </div>
-      
+
       <div class="folder-backdrop"></div>
     </div>
   </section>
@@ -367,21 +367,42 @@
         <h3 id="product3dTitle">Product Name</h3>
         <button class="close-3d" id="close3dModal">×</button>
       </div>
-      
-      <model-viewer 
+
+      <model-viewer
         id="product3dViewer"
         src=""
-        ar 
+        ar
         ar-modes="webxr scene-viewer quick-look"
-        camera-controls 
-        auto-rotate 
+        camera-controls
+        auto-rotate
         rotation-per-second="30deg"
         shadow-intensity="1"
         exposure="1"
         environment-image="neutral"
         alt="3D model">
+
+        <!-- Dimension hotspots -->
+        <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="1 -1 1" data-normal="1 0 0"></button>
+        <button slot="hotspot-dim+X-Y" class="dim" data-position="1 -1 0" data-normal="1 0 0"></button>
+        <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="1 -1 -1" data-normal="1 0 0"></button>
+        <button slot="hotspot-dim+X-Z" class="dim" data-position="1 0 -1" data-normal="1 0 0"></button>
+        <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="1 1 -1" data-normal="0 1 0"></button>
+        <button slot="hotspot-dim+Y-Z" class="dim" data-position="0 1 -1" data-normal="0 1 0"></button>
+        <button slot="hotspot-dot-X+Y-Z" class="dot" data-position="-1 1 -1" data-normal="0 1 0"></button>
+        <button slot="hotspot-dim-X-Z" class="dim" data-position="-1 0 -1" data-normal="-1 0 0"></button>
+        <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="-1 -1 -1" data-normal="-1 0 0"></button>
+        <button slot="hotspot-dim-X-Y" class="dim" data-position="-1 -1 0" data-normal="-1 0 0"></button>
+        <button slot="hotspot-dot-X-Y+Z" class="dot" data-position="-1 -1 1" data-normal="-1 0 0"></button>
+
+        <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+        </svg>
       </model-viewer>
-      
+
       <div class="product-3d-actions">
         <a href="contact.html" class="btn-quote">Get Quote</a>
         <button class="btn-ar" id="arButton">View in AR</button>
@@ -412,6 +433,7 @@
               <p>sales@vceindia.com</p>
             </div>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_info">
             <h5>Informations</h5>
@@ -436,6 +458,7 @@
               </div>
             </div>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_form">
             <h5>Newsletter</h5>
@@ -471,7 +494,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
   <!-- Google Model Viewer -->
   <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
-  
+
   <script>
     // Owl Carousel init
     $(".owl-carousel").owlCarousel({
@@ -492,42 +515,42 @@
     const menuToggle = document.getElementById('menuToggle');
     const slideMenu = document.getElementById('slideMenu');
     const menuOverlay = document.getElementById('menuOverlay');
-    
+
     function toggleMenu() {
       menuToggle.classList.toggle('active');
       slideMenu.classList.toggle('active');
-      document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
+      document.body.style.overflow = slideMenu.classList.contains('active')? 'hidden' : '';
     }
-    
+
     menuToggle.addEventListener('click', toggleMenu);
     menuOverlay.addEventListener('click', toggleMenu);
-    
-    document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
+
+    document.querySelectorAll('.slide-menu.nav-link').forEach(link => {
       link.addEventListener('click', () => {
         menuToggle.classList.remove('active');
         slideMenu.classList.remove('active');
         document.body.style.overflow = '';
       });
     });
-    
+
     // Product Search
     document.getElementById('searchForm').addEventListener('submit', function(e) {
       e.preventDefault();
       const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
       const folderItems = document.querySelectorAll('.folder-item[data-product-name]');
       const folders = document.querySelectorAll('.folder-box');
-      
+
       if (searchTerm === '') {
         folderItems.forEach(item => item.style.display = 'block');
         folders.forEach(folder => folder.style.display = 'block');
         return;
       }
-      
+
       let found = false;
       folders.forEach(folder => {
         const items = folder.querySelectorAll('.folder-item[data-product-name]');
         let folderHasMatch = false;
-        
+
         items.forEach(item => {
           const productName = item.getAttribute('data-product-name').toLowerCase();
           if (productName.includes(searchTerm)) {
@@ -538,17 +561,17 @@
             item.style.display = 'none';
           }
         });
-        
-        folder.style.display = folderHasMatch ? 'block' : 'none';
+
+        folder.style.display = folderHasMatch? 'block' : 'none';
       });
-      
+
       if (!found) {
         alert('No products found matching "' + searchTerm + '"');
         folderItems.forEach(item => item.style.display = 'block');
         folders.forEach(folder => folder.style.display = 'block');
       }
     });
-    
+
     window.addEventListener('load', function() {
       const urlParams = new URLSearchParams(window.location.search);
       const searchTerm = urlParams.get('search');
@@ -557,67 +580,67 @@
         document.getElementById('searchForm').dispatchEvent(new Event('submit'));
       }
     });
-    
+
     // Android Folder System
     document.addEventListener('DOMContentLoaded', function() {
       const folders = document.querySelectorAll('.folder-box');
       const backdrop = document.querySelector('.folder-backdrop');
-      
+
       folders.forEach(folder => {
         const preview = folder.querySelector('.folder-preview');
         const closeBtn = folder.querySelector('.close-folder');
-        
+
         preview.addEventListener('click', () => {
           folder.classList.add('active');
           backdrop.classList.add('active');
           document.body.style.overflow = 'hidden';
         });
-        
+
         closeBtn.addEventListener('click', () => {
           folder.classList.remove('active');
           backdrop.classList.remove('active');
           document.body.style.overflow = '';
         });
       });
-      
+
       backdrop.addEventListener('click', () => {
         document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
         backdrop.classList.remove('active');
         document.body.style.overflow = '';
       });
     });
-    
-    // 3D Product Viewer Logic
+
+    // 3D Product Viewer Logic + Dimensions
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
     const close3dModal = document.getElementById('close3dModal');
     const arButton = document.getElementById('arButton');
-    
+
     document.querySelectorAll('.folder-item').forEach(item => {
       item.addEventListener('click', function(e) {
         e.preventDefault();
         const productName = this.getAttribute('data-product-name') || 'Product';
         const modelUrl = this.getAttribute('data-model') || '';
-        
+
         if (!modelUrl) {
           alert('3D model coming soon for ' + productName);
           return;
         }
-        
+
         product3dTitle.textContent = productName;
         product3dViewer.src = modelUrl;
         product3dModal.classList.add('active');
         document.body.style.overflow = 'hidden';
       });
     });
-    
+
     close3dModal.addEventListener('click', () => {
       product3dModal.classList.remove('active');
       document.body.style.overflow = '';
       product3dViewer.src = '';
     });
-    
+
     product3dModal.addEventListener('click', (e) => {
       if (e.target === product3dModal) {
         product3dModal.classList.remove('active');
@@ -625,11 +648,78 @@
         product3dViewer.src = '';
       }
     });
-    
+
     arButton.addEventListener('click', () => {
       product3dViewer.activateAR();
     });
-    
+
+    // Dimension Lines Logic
+    function drawLine(svgLine, dotHotspot1, dotHotspot2, dimensionHotspot) {
+      if (dotHotspot1 && dotHotspot2) {
+        svgLine.setAttribute('x1', dotHotspot1.canvasPosition.x);
+        svgLine.setAttribute('y1', dotHotspot1.canvasPosition.y);
+        svgLine.setAttribute('x2', dotHotspot2.canvasPosition.x);
+        svgLine.setAttribute('y2', dotHotspot2.canvasPosition.y);
+        if (dimensionHotspot &&!dimensionHotspot.facingCamera) {
+          svgLine.classList.add('hide');
+        } else {
+          svgLine.classList.remove('hide');
+        }
+      }
+    }
+
+    function renderDimensions() {
+      const centerPoint = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+      const xPoint = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const yPoint = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const zPoint = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
+
+      if (!centerPoint ||!xPoint ||!yPoint ||!zPoint) return;
+
+      const dimX = product3dViewer.queryHotspot('hotspot-dim+X-Y');
+      const dimY = product3dViewer.queryHotspot('hotspot-dim+X-Z');
+      const dimZ = product3dViewer.queryHotspot('hotspot-dim+Y-Z');
+
+      const lines = product3dViewer.querySelectorAll('line');
+
+      if (dimX) {
+        const {x: x1, y: y1, z: z1} = centerPoint.position;
+        const {x: x2, y: y2, z: z2} = xPoint.position;
+        dimX.textContent = `${Math.abs(x1 - x2).toFixed(2)}m`;
+        drawLine(lines[0], centerPoint, xPoint, dimX);
+      }
+
+      if (dimY) {
+        const {y: y1} = centerPoint.position;
+        const {y: y2} = yPoint.position;
+        dimY.textContent = `${Math.abs(y1 - y2).toFixed(2)}m`;
+        drawLine(lines[1], centerPoint, yPoint, dimY);
+      }
+
+      if (dimZ) {
+        const {z: z1} = centerPoint.position;
+        const {z: z2} = zPoint.position;
+        dimZ.textContent = `${Math.abs(z1 - z2).toFixed(2)}m`;
+        drawLine(lines[2], yPoint, zPoint, dimZ);
+      }
+
+      drawLine(lines[3], xPoint, product3dViewer.queryHotspot('hotspot-dot+X-Y-Z'));
+      drawLine(lines[4], zPoint, product3dViewer.queryHotspot('hotspot-dot-X+Y-Z'));
+    }
+
+    product3dViewer.addEventListener('load', () => {
+      const center = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+      const xNode = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const yNode = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const zNode = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
+
+      if (center && xNode && yNode && zNode) {
+        renderDimensions();
+      }
+    });
+
+    product3dViewer.addEventListener('camera-change', renderDimensions);
+
     if (history.scrollRestoration) {
       history.scrollRestoration = 'manual';
     }
