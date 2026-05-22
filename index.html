@@ -1095,29 +1095,43 @@ function renderDimensions() {
 
   animationFrameId = requestAnimationFrame(renderDimensions);
 }
-   if (product3dViewer) {
+if (product3dViewer) {
+  // Mobile needs both 'load' AND 'poster-dismissed' before getDimensions() is valid
+  let modelReady = false;
+  let posterGone = false;
+
+  const trySetupDimensions = () => {
+    if (modelReady && posterGone) {
+      console.log('Mobile ready - setting up dimensions');
+      setTimeout(setupDimensions, 400); // extra delay for mobile GPU
+    }
+  };
+
   product3dViewer.addEventListener('load', () => {
-    setTimeout(setupDimensions, 300);
+    console.log('model-viewer load event');
+    modelReady = true;
+    trySetupDimensions();
+  });
+
+  product3dViewer.addEventListener('poster-dismissed', () => {
+    console.log('poster dismissed');
+    posterGone = true;
+    trySetupDimensions();
   });
 
   product3dViewer.addEventListener('camera-change', () => {
-    if (!animationFrameId) renderDimensions();
+    if (!animationFrameId && baseDimensions) renderDimensions();
   });
 
   product3dViewer.addEventListener('ar-status', (event) => {
     if (event.detail.status === 'session-started') {
-      // AR started - kick off dimension render loop
       stopRendering();
-      // Wait 500ms for AR to stabilize then start
-      setTimeout(() => {
-        renderDimensions();
-      }, 500);
+      setTimeout(() => renderDimensions(), 500);
     } else if (event.detail.status === 'not-presenting') {
       stopRendering();
     }
   });
 
-  // Extra hook for Android Scene Viewer scaling
   product3dViewer.addEventListener('ar-tracking', () => {
     if (!animationFrameId && baseDimensions) renderDimensions();
   });
