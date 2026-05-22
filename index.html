@@ -1090,24 +1090,33 @@ model-viewer::part(default-ar-button) {
       animationFrameId = requestAnimationFrame(renderDimensions);
     }
 
-    if (product3dViewer) {
-      product3dViewer.addEventListener('load', () => {
-        setTimeout(setupDimensions, 800);
-      });
+   if (product3dViewer) {
+  product3dViewer.addEventListener('load', () => {
+    setTimeout(setupDimensions, 300);
+  });
 
-      product3dViewer.addEventListener('camera-change', () => {
-        if (!animationFrameId) renderDimensions();
-      });
+  product3dViewer.addEventListener('camera-change', () => {
+    if (!animationFrameId) renderDimensions();
+  });
 
-      product3dViewer.addEventListener('ar-status', (event) => {
-        if (event.detail.status === 'session-started') {
-          renderDimensions();
-        } else if (event.detail.status === 'not-presenting') {
-          stopRendering();
-        }
-      });
+  product3dViewer.addEventListener('ar-status', (event) => {
+    if (event.detail.status === 'session-started') {
+      // AR started - kick off dimension render loop
+      stopRendering();
+      // Wait 500ms for AR to stabilize then start
+      setTimeout(() => {
+        renderDimensions();
+      }, 500);
+    } else if (event.detail.status === 'not-presenting') {
+      stopRendering();
     }
+  });
 
+  // Extra hook for Android Scene Viewer scaling
+  product3dViewer.addEventListener('ar-tracking', () => {
+    if (!animationFrameId && baseDimensions) renderDimensions();
+  });
+}
     // Click folder items to open 3D
     document.querySelectorAll('.folder-item').forEach(item => {
       item.addEventListener('click', function(e) {
