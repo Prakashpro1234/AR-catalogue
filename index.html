@@ -1003,6 +1003,11 @@
     }
 
 function setupDimensions() {
+  alert('setupDimensions ran. dims: ' + JSON.stringify(product3dViewer.getDimensions()));
+  if (!product3dViewer ||!dimLines) return;
+  // rest...
+  
+function setupDimensions() {
   if (!product3dViewer ||!dimLines) return;
 
   const dimensions = product3dViewer.getDimensions();
@@ -1167,11 +1172,6 @@ if (product3dViewer) {
   window.onbeforeunload = function () {
     window.scrollTo(0, 0);
   }
-</script>
-      <script>
-window.onerror = function(msg, url, line) {
-  alert('Error: ' + msg + '\nLine: ' + line);
-};
 </script>
 </body>
 </html>
