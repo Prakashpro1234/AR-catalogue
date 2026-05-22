@@ -517,8 +517,16 @@
   </section>
   <!-- end trending section -->
 
- <!-- 3D Product Viewer Modal -->
-  <model-viewer
+<!-- 3D Product Viewer Modal -->
+  <div class="product-3d-modal" id="product3dModal">
+    <div class="product-3d-container">
+      <div class="product-3d-header">
+        <h3 id="product3dTitle">Product Name</h3>
+        <button class="close-3d" id="close3dModal">×</button>
+      </div>
+
+      <div style="position: relative;">
+        <model-viewer
           id="product3dViewer"
           src=""
           ar
