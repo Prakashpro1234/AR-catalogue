@@ -1004,15 +1004,13 @@
 
   
 function setupDimensions() {
-  alert('setupDimensions ran. dims: ' + JSON.stringify(product3dViewer.getDimensions()));
-  if (!product3dViewer ||!dimLines) return;
-  
-  const dimensions = product3dViewer.getDimensions();
-  // ... rest of code
+  if (!product3dViewer || !dimLines) return;
 
   const dimensions = product3dViewer.getDimensions();
-  if (!dimensions ||!dimensions.x) {
-    setTimeout(setupDimensions, 200); // retry faster on mobile
+  console.log('setupDimensions dims:', dimensions);
+  
+  if (!dimensions || !dimensions.x) {
+    setTimeout(setupDimensions, 200);
     return;
   }
 
