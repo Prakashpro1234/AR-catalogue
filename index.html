@@ -1057,27 +1057,32 @@
     });
 
     // Click thumbnail to open 3D modal
-    document.querySelectorAll('.folder-item').forEach(item => {
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        const productName = this.getAttribute('data-product-name') || 'Product';
-        const modelUrl = this.getAttribute('data-model') || '';
+    // NEW CODE - USE THIS
+document.querySelectorAll('.folder-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const productName = this.getAttribute('data-product-name') || 'Product';
+    const modelUrl = this.getAttribute('data-model') || '';
 
-        if (!modelUrl) {
-          alert('3D model coming soon for ' + productName);
-          return;
-        }
+    if (!modelUrl) {
+      alert('3D model coming soon for ' + productName);
+      return;
+    }
 
-        currentProductName = productName;
-        product3dTitle.textContent = productName;
-        [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
-        baseDimensions = null;
-        stopRendering();
-        product3dViewer.src = modelUrl;
-        product3dModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-    });
+    // Close folder first before opening 3D
+    document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
+    document.querySelector('.folder-backdrop').classList.remove('active');
+    
+    currentProductName = productName;
+    product3dTitle.textContent = productName;
+    [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
+    baseDimensions = null;
+    stopRendering();
+    product3dViewer.src = modelUrl;
+    product3dModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+});
 
     // Get Quote button inside 3D modal - bottom left
     modalQuoteBtn.addEventListener('click', function() {
