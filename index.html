@@ -15,75 +15,23 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
-
-  <style>
-
-    /* 3D Modal Buttons */
-.product-3d-actions {
-  position: absolute;
-  bottom: 20px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 20px;
-  pointer-events: none;
-  z-index: 20;
-}
-
-.btn-quote, .btn-ar {
-  pointer-events: all;
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'Poppins', sans-serif;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  text-decoration: none;
-  display: inline-block;
-}
-
-.btn-quote {
-  background: #000;
-  color: #fff;
-}
-
-.btn-quote:hover {
-  background: #333;
-  transform: translateY(-2px);
-  color: #fff;
-}
-
-.btn-ar {
-  background: #FFC107;
-  color: #000;
-}
-
-.btn-ar:hover {
-  background: #ffb300;
-  transform: translateY(-2px);
-}
-
-model-viewer::part(default-ar-button) {
-  display: none;
-}
-  /* 3D Dimension Lines */
-.dimensionLineContainer {
+  
+<style>
+  /* 3D Dimension Lines - FIXED FOR MOBILE */
+  .dimensionLineContainer {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
     z-index: 10;
+    overflow: visible; /* mobile fix */
   }
-.dimensionLine {
+  .dimensionLine {
     stroke: #FFC107;
     stroke-width: 3;
+    vector-effect: non-scaling-stroke; /* mobile fix */
   }
-.dim {
+  .dim {
     background: rgba(240, 240, 240, 0.95);
     color: #000;
     border-radius: 12px;
@@ -98,13 +46,67 @@ model-viewer::part(default-ar-button) {
     white-space: nowrap;
     z-index: 11;
   }
-.hide { display: none; }
-.dot { display: none; }
+  .hide { display: none; }
+  .dot { display: none; }
 
- model-viewer {
-   position: relative;
- }
-  </style>
+  model-viewer {
+    position: relative;
+  }
+
+  /* 3D Modal Buttons */
+  .product-3d-actions {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  .btn-quote, .btn-ar {
+    pointer-events: all;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .btn-quote {
+    background: #000;
+    color: #fff;
+  }
+
+  .btn-quote:hover {
+    background: #333;
+    transform: translateY(-2px);
+    color: #fff;
+  }
+
+  .btn-ar {
+    background: #FFC107;
+    color: #000;
+  }
+
+  .btn-ar:hover {
+    background: #ffb300;
+    transform: translateY(-2px);
+  }
+
+  model-viewer::part(default-ar-button) {
+    display: none;
+  }
+</style>
 </head>
 
 <body>
