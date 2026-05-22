@@ -1000,96 +1000,99 @@ model-viewer::part(default-ar-button) {
       svgLine.setAttribute('y2', p2.y);
     }
 
-    function setupDimensions() {
-      if (!product3dViewer ||!dimLines) return;
+function setupDimensions() {
+  if (!product3dViewer ||!dimLines) return;
 
-      const dimensions = product3dViewer.getDimensions();
-      if (!dimensions ||!dimensions.x) {
-        setTimeout(setupDimensions, 100);
-        return;
-      }
+  const dimensions = product3dViewer.getDimensions();
+  if (!dimensions ||!dimensions.x) {
+    setTimeout(setupDimensions, 200); // retry faster on mobile
+    return;
+  }
 
-      baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
-      const center = product3dViewer.getCameraTarget();
-      if (!center ||!center.x) {
-        setTimeout(setupDimensions, 100);
-        return;
-      }
+  baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
+  const center = product3dViewer.getCameraTarget();
+  if (!center || typeof center.x === 'undefined') {
+    setTimeout(setupDimensions, 200);
+    return;
+  }
 
-      const halfX = dimensions.x * 0.5;
-      const halfY = dimensions.y * 0.5;
-      const halfZ = dimensions.z * 0.5;
-      const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
-      const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
+  const halfX = dimensions.x * 0.5;
+  const halfY = dimensions.y * 0.5;
+  const halfZ = dimensions.z * 0.5;
+  const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
+  const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
 
-      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+  // Mobile fix: set hotspots twice with delay
+  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
 
-      requestAnimationFrame(() => {
-        requestAnimationFrame(renderDimensions);
-      });
-    }
+  // Double-render to force mobile to catch up
+  setTimeout(() => {
+    product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+    product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+    product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+    product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+    requestAnimationFrame(renderDimensions);
+  }, 100);
+}
 
-    function renderDimensions() {
-      if (!baseDimensions ||!product3dViewer ||!dimLines) return;
+function renderDimensions() {
+  if (!baseDimensions ||!product3dViewer ||!dimLines) return;
 
-      const scale = product3dViewer.scale;
-      const scaleX = scale.x || 1;
-      const scaleY = scale.y || 1;
-      const scaleZ = scale.z || 1;
+  const scale = product3dViewer.scale || { x: 1, y: 1, z: 1 };
+  const scaleX = scale.x || 1;
+  const scaleY = scale.y || 1;
+  const scaleZ = scale.z || 1;
 
-      const lines = dimLines.querySelectorAll('.dimensionLine');
-      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-      const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+  const lines = dimLines.querySelectorAll('.dimensionLine');
+  const h1 = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+  const h2 = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+  const h3 = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+  const h4 = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
 
-      if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
-        animationFrameId = requestAnimationFrame(renderDimensions);
-        return;
-      }
+  // Mobile fix: if any hotspot missing, retry next frame instead of dying
+  if (!h1?.canvasPosition ||!h2?.canvasPosition ||!h3?.canvasPosition ||!h4?.canvasPosition) {
+    animationFrameId = requestAnimationFrame(renderDimensions);
+    return;
+  }
 
-      // Length
-      if (dimX && lines[0]) {
-        const c1 = minXminYminZ.canvasPosition;
-        const c2 = maxXminYminZ.canvasPosition;
-        const lengthIn = (baseDimensions.x * scaleX) * 39.37;
-        dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
-        dimX.style.left = (c1.x + c2.x) / 2 + 'px';
-        dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
-        dimX.classList.remove('hide');
-        drawLine(lines[0], c1, c2);
-      }
+  // Length X
+  const c1 = h1.canvasPosition, c2 = h2.canvasPosition;
+  if (dimX && lines[0]) {
+    const lengthIn = (baseDimensions.x * scaleX) * 39.37;
+    dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
+    dimX.style.left = (c1.x + c2.x) / 2 + 'px';
+    dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
+    dimX.classList.remove('hide');
+    drawLine(lines[0], c1, c2);
+  }
 
-      // Height
-      if (dimY && lines[1] && maxXmaxYminZ?.canvasPosition) {
-        const c2 = maxXminYminZ.canvasPosition;
-        const c3 = maxXmaxYminZ.canvasPosition;
-        const heightIn = (baseDimensions.y * scaleY) * 39.37;
-        dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
-        dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
-        dimY.style.top = (c2.y + c3.y) / 2 + 'px';
-        dimY.classList.remove('hide');
-        drawLine(lines[1], c2, c3);
-      }
+  // Height Y
+  const c3 = h3.canvasPosition;
+  if (dimY && lines[1]) {
+    const heightIn = (baseDimensions.y * scaleY) * 39.37;
+    dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
+    dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
+    dimY.style.top = (c2.y + c3.y) / 2 + 'px';
+    dimY.classList.remove('hide');
+    drawLine(lines[1], c2, c3);
+  }
 
-      // Breadth
-      if (dimZ && lines[2] && maxXminYmaxZ?.canvasPosition) {
-        const c2 = maxXminYminZ.canvasPosition;
-        const c4 = maxXminYmaxZ.canvasPosition;
-        const breadthIn = (baseDimensions.z * scaleZ) * 39.37;
-        dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
-        dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
-        dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
-        dimZ.classList.remove('hide');
-        drawLine(lines[2], c2, c4);
-      }
+  // Breadth Z
+  const c4 = h4.canvasPosition;
+  if (dimZ && lines[2]) {
+    const breadthIn = (baseDimensions.z * scaleZ) * 39.37;
+    dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
+    dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
+    dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
+    dimZ.classList.remove('hide');
+    drawLine(lines[2], c2, c4);
+  }
 
-      animationFrameId = requestAnimationFrame(renderDimensions);
-    }
-
+  animationFrameId = requestAnimationFrame(renderDimensions);
+}
    if (product3dViewer) {
   product3dViewer.addEventListener('load', () => {
     setTimeout(setupDimensions, 300);
