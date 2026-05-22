@@ -884,15 +884,21 @@
     const arButton = document.getElementById('arButton');
 
     function drawLine(svgLine, dot1, dot2) {
-      if (!dot1 ||!dot2 ||!dot1.canvasPosition ||!dot2.canvasPosition) return;
+      if (!dot1 ||!dot2 ||!dot1.canvasPosition ||!dot2.canvasPosition) return false;
       svgLine.setAttribute('x1', dot1.canvasPosition.x);
       svgLine.setAttribute('y1', dot1.canvasPosition.y);
       svgLine.setAttribute('x2', dot2.canvasPosition.x);
       svgLine.setAttribute('y2', dot2.canvasPosition.y);
+      return true;
     }
 
     function setupDimensions() {
       const bbox = product3dViewer.getBoundingBox();
+      if (!bbox) {
+        setTimeout(setupDimensions, 100);
+        return;
+      }
+
       const min = bbox.min;
       const max = bbox.max;
 
@@ -906,19 +912,21 @@
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y+Z', position: `${max.x} ${max.y} ${max.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y+Z', position: `${min.x} ${max.y} ${max.z}` });
 
-      // Label hotspots at edge midpoints
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${(min.x + max.x)/2} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${max.x} ${(min.y + max.y)/2} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${max.x} ${min.y} ${(min.z + max.z)/2}` });
+      // Labels at center of edges - offset slightly so they don't hide
+      const offset = 0.05;
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${(min.x + max.x)/2} ${min.y - offset} ${min.z - offset}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${max.x + offset} ${(min.y + max.y)/2} ${min.z - offset}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${max.x + offset} ${min.y - offset} ${(min.z + max.z)/2}` });
 
-      // Wait 1 frame for canvasPosition to update
-      requestAnimationFrame(renderDimensions);
+      // Wait for hotspots to update
+      requestAnimationFrame(() => {
+        requestAnimationFrame(renderDimensions);
+      });
     }
 
     function renderDimensions() {
       const lines = product3dViewer.querySelectorAll('.dimensionLine');
 
-      // Get corner dots
       const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
       const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
       const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
@@ -928,35 +936,49 @@
       const dimHeight = product3dViewer.queryHotspot('hotspot-dim-Y');
       const dimBreadth = product3dViewer.queryHotspot('hotspot-dim-Z');
 
-      if (!minXminYminZ ||!maxXminYminZ ||!maxXmaxYminZ ||!maxXminYmaxZ) {
+      // Retry if hotspots not ready
+      if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
         requestAnimationFrame(renderDimensions);
         return;
       }
 
-      lines.forEach(l => l.classList.remove('hide'));
-      document.querySelectorAll('.dim').forEach(d => d.classList.remove('hide'));
-
       // Length = X axis
       const lengthDist = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
-      dimLength.textContent = `Length: ${lengthDist.toFixed(1)}"`;
+      if (dimLength) {
+        dimLength.textContent = `Length: ${lengthDist.toFixed(1)}"`;
+        dimLength.classList.remove('hide');
+      }
       drawLine(lines[0], minXminYminZ, maxXminYminZ);
 
       // Height = Y axis
-      const heightDist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
-      dimHeight.textContent = `Height: ${heightDist.toFixed(1)}"`;
-      drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
+      if (maxXmaxYminZ?.canvasPosition) {
+        const heightDist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
+        if (dimHeight) {
+          dimHeight.textContent = `Height: ${heightDist.toFixed(1)}"`;
+          dimHeight.classList.remove('hide');
+        }
+        drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
+      }
 
       // Breadth = Z axis
-      const breadthDist = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
-      dimBreadth.textContent = `Breadth: ${breadthDist.toFixed(1)}"`;
-      drawLine(lines[2], maxXminYminZ, maxXminYmaxZ);
+      if (maxXminYmaxZ?.canvasPosition) {
+        const breadthDist = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
+        if (dimBreadth) {
+          dimBreadth.textContent = `Breadth: ${breadthDist.toFixed(1)}"`;
+          dimBreadth.classList.remove('hide');
+        }
+        drawLine(lines[2], maxXminYminZ, maxXminYmaxZ);
+      }
     }
 
     product3dViewer.addEventListener('load', () => {
-      setTimeout(setupDimensions, 100);
+      // Wait for model to settle
+      setTimeout(setupDimensions, 300);
     });
 
-    product3dViewer.addEventListener('camera-change', renderDimensions);
+    product3dViewer.addEventListener('camera-change', () => {
+      requestAnimationFrame(renderDimensions);
+    });
 
     document.querySelectorAll('.folder-item').forEach(item => {
       item.addEventListener('click', function(e) {
@@ -970,6 +992,8 @@
         }
 
         product3dTitle.textContent = productName;
+        // Hide dims while loading
+        document.querySelectorAll('.dim').forEach(d => d.classList.add('hide'));
         product3dViewer.src = modelUrl;
         product3dModal.classList.add('active');
         document.body.style.overflow = 'hidden';
