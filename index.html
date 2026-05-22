@@ -572,50 +572,53 @@ model-viewer::part(default-ar-button) {
   <!-- end trending section -->
 
 
-<!-- 3D Product Viewer Modal -->
   <!-- 3D Product Viewer Modal -->
-  <div class="product-3d-modal" id="product3dModal">
-    <div class="product-3d-container">
-      <div class="product-3d-header">
-        <h3 id="product3dTitle">Product Name</h3>
-        <button class="close-3d" id="close3dModal">×</button>
-      </div>
+ <!-- 3D Product Viewer Modal -->
+<div class="product-3d-modal" id="product3dModal">
+  <div class="product-3d-container">
+    <div class="product-3d-header">
+      <h3 id="product3dTitle">Product Name</h3>
+      <button class="close-3d" id="close3dModal">×</button>
+    </div>
 
-     <div style="position: relative;">
-  <model-viewer
-    id="product3dViewer"
-    src=""
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    camera-controls
-    auto-rotate
-    rotation-per-second="30deg"
-    shadow-intensity="1"
-    exposure="1"
-    environment-image="neutral"
-    alt="3D model">
+    <div style="position: relative;">
+      <model-viewer
+        id="product3dViewer"
+        src=""
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        auto-rotate
+        rotation-per-second="30deg"
+        shadow-intensity="1"
+        exposure="1"
+        environment-image="neutral"
+        alt="3D model">
 
-    <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0"></button>
-    <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0"></button>
-    <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0"></button>
-    <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
-  </model-viewer>
+        <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+      </model-viewer>
 
-  <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
-    <line class="dimensionLine"></line>
-    <line class="dimensionLine"></line>
-    <line class="dimensionLine"></line>
-  </svg>
+      <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
+        <line class="dimensionLine"></line>
+        <line class="dimensionLine"></line>
+        <line class="dimensionLine"></line>
+      </svg>
 
-  <div class="dim hide" id="dimX"></div>
-  <div class="dim hide" id="dimY"></div>
-  <div class="dim hide" id="dimZ"></div>
+      <div class="dim hide" id="dimX"></div>
+      <div class="dim hide" id="dimY"></div>
+      <div class="dim hide" id="dimZ"></div>
+    </div>
+
+    <div class="product-3d-actions">
+      <button class="btn-quote" id="modalQuoteBtn">Get Quote</button>
+      <button class="btn-ar" id="arButton">View in AR</button>
+    </div>
+  </div>
 </div>
-
-<div class="product-3d-actions">
-  <button class="btn-quote" id="modalQuoteBtn">Get Quote</button>
-  <button class="btn-ar" id="arButton">View in AR</button>
-</div>
+<!-- end 3D Product Viewer Modal -->
  <!-- end 3D Product Viewer Modal -->
 
   
@@ -1089,7 +1092,7 @@ model-viewer::part(default-ar-button) {
 
     if (product3dViewer) {
       product3dViewer.addEventListener('load', () => {
-        setTimeout(setupDimensions, 300);
+        setTimeout(setupDimensions, 800);
       });
 
       product3dViewer.addEventListener('camera-change', () => {
