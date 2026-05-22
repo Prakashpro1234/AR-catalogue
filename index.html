@@ -517,7 +517,8 @@
   </section>
   <!-- end trending section -->
 
- <!-- 3D Product Viewer Modal -->
+
+<!-- 3D Product Viewer Modal -->
   <div class="product-3d-modal" id="product3dModal">
     <div class="product-3d-container">
       <div class="product-3d-header">
@@ -538,6 +539,11 @@
           exposure="1"
           environment-image="neutral"
           alt="3D model">
+
+          <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
         </model-viewer>
 
         <!-- SVG overlay - NOT inside model-viewer -->
@@ -559,7 +565,7 @@
       </div>
     </div>
   </div>
-
+ <!-- end 3D Product Viewer Modal -->
   <!-- discount section -->
   <section class="discount_section layout_padding">
     <div class="container">
@@ -867,7 +873,7 @@
       });
     });
 
-    // 3D Product Viewer Logic with Dynamic Dimensions
+  // 3D Product Viewer Logic with Dynamic Dimensions
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
@@ -879,48 +885,63 @@
     const dimZ = document.getElementById('dimZ');
 
     function drawLine(svgLine, p1, p2) {
-      if (!p1 ||!p2) return false;
+      if (!p1 ||!p2) return;
       svgLine.setAttribute('x1', p1.x);
       svgLine.setAttribute('y1', p1.y);
       svgLine.setAttribute('x2', p2.x);
       svgLine.setAttribute('y2', p2.y);
-      return true;
     }
 
-    function updateDimensions() {
+    function setupDimensions() {
       // model-viewer 3.3+ uses getDimensions, not getBoundingBox
       const dimensions = product3dViewer.getDimensions();
-      if (!dimensions) {
-        requestAnimationFrame(updateDimensions);
+      if (!dimensions ||!dimensions.x) {
+        setTimeout(setupDimensions, 100);
         return;
       }
 
       const center = product3dViewer.getCameraTarget();
-      const half = dimensions.multiplyScalar(0.5);
-      const min = center.sub(half);
-      const max = center.add(half);
-
-      // Get 3D positions of corners
-      const p1 = {position: min}; // minX, minY, minZ
-      const p2 = {position: {x: max.x, y: min.y, z: min.z}}; // maxX, minY, minZ
-      const p3 = {position: {x: max.x, y: max.y, z: min.z}}; // maxX, maxY, minZ
-      const p4 = {position: {x: max.x, y: min.y, z: max.z}}; // maxX, minY, maxZ
-
-      // Convert to canvas coords
-      const c1 = product3dViewer.toCanvasPosition(p1.position);
-      const c2 = product3dViewer.toCanvasPosition(p2.position);
-      const c3 = product3dViewer.toCanvasPosition(p3.position);
-      const c4 = product3dViewer.toCanvasPosition(p4.position);
-
-      if (!c1 ||!c2) {
-        requestAnimationFrame(updateDimensions);
+      if (!center ||!center.x) {
+        setTimeout(setupDimensions, 100);
         return;
       }
 
+      const halfX = dimensions.x * 0.5;
+      const halfY = dimensions.y * 0.5;
+      const halfZ = dimensions.z * 0.5;
+
+      const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
+      const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
+
+      // Update invisible hotspot positions
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+
+      // Wait 2 frames for hotspots to update
+      requestAnimationFrame(() => {
+        requestAnimationFrame(renderDimensions);
+      });
+    }
+
+    function renderDimensions() {
       const lines = dimLines.querySelectorAll('.dimensionLine');
 
+      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+
+      if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
+        requestAnimationFrame(renderDimensions);
+        return;
+      }
+
       // Length - X axis
-      const lengthIn = Math.abs(max.x - min.x) * 39.37;
+      const c1 = minXminYminZ.canvasPosition;
+      const c2 = maxXminYminZ.canvasPosition;
+      const lengthIn = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
       dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
       dimX.style.left = (c1.x + c2.x) / 2 + 'px';
       dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
@@ -928,8 +949,9 @@
       drawLine(lines[0], c1, c2);
 
       // Height - Y axis
-      if (c3) {
-        const heightIn = Math.abs(max.y - min.y) * 39.37;
+      if (maxXmaxYminZ?.canvasPosition) {
+        const c3 = maxXmaxYminZ.canvasPosition;
+        const heightIn = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
         dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
         dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
         dimY.style.top = (c2.y + c3.y) / 2 + 'px';
@@ -938,8 +960,9 @@
       }
 
       // Breadth - Z axis
-      if (c4) {
-        const breadthIn = Math.abs(max.z - min.z) * 39.37;
+      if (maxXminYmaxZ?.canvasPosition) {
+        const c4 = maxXminYmaxZ.canvasPosition;
+        const breadthIn = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
         dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
         dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
         dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
@@ -949,13 +972,11 @@
     }
 
     product3dViewer.addEventListener('load', () => {
-      setTimeout(() => {
-        requestAnimationFrame(updateDimensions);
-      }, 300);
+      setTimeout(setupDimensions, 300);
     });
 
     product3dViewer.addEventListener('camera-change', () => {
-      requestAnimationFrame(updateDimensions);
+      requestAnimationFrame(renderDimensions);
     });
 
     document.querySelectorAll('.folder-item').forEach(item => {
@@ -970,7 +991,6 @@
         }
 
         product3dTitle.textContent = productName;
-        // Hide dims while loading
         [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
         product3dViewer.src = modelUrl;
         product3dModal.classList.add('active');
