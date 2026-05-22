@@ -1002,13 +1002,13 @@
       svgLine.setAttribute('y2', p2.y);
     }
 
+  
 function setupDimensions() {
   alert('setupDimensions ran. dims: ' + JSON.stringify(product3dViewer.getDimensions()));
   if (!product3dViewer ||!dimLines) return;
-  // rest...
   
-function setupDimensions() {
-  if (!product3dViewer ||!dimLines) return;
+  const dimensions = product3dViewer.getDimensions();
+  // ... rest of code
 
   const dimensions = product3dViewer.getDimensions();
   if (!dimensions ||!dimensions.x) {
