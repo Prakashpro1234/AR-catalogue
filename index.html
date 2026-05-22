@@ -15,228 +15,42 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
-<style>
-  /* 3D Product Viewer Modal - THIS MAKES IT POP UP */
-  .modal-3d {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    z-index: 10001;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
 
-  .modal-3d.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .modal-3d-content {
-    width: 100%;
-    max-width: 900px;
-    background: var(--white, #fff);
-    border-radius: 20px;
-    overflow: hidden;
-    transform: scale(0.9);
-    transition: transform 0.3s ease;
-  }
-
-  .modal-3d.active .modal-3d-content {
-    transform: scale(1);
-  }
-
-  .modal-3d-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 25px;
-    border-bottom: 2px solid var(--accent, #FFC107);
-    background: var(--light, #f8f9fa);
-  }
-
-  .modal-3d-header h3 {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    font-size: 20px;
-    color: var(--primary, #000);
-    font-weight: 700;
-  }
-
-  .close-3d-modal {
-    width: 35px;
-    height: 35px;
-    border: none;
-    background: var(--primary, #000);
-    color: var(--white, #fff);
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    line-height: 1;
-    transition: all 0.3s;
-  }
-
-  .close-3d-modal:hover {
-    background: var(--accent, #FFC107);
-    transform: rotate(90deg);
-  }
-
-  .modal-3d-body {
-    position: relative;
-  }
-
-  model-viewer {
-    position: relative;
-    width: 100%;
-    height: 60vh;
-    background-color: #f5f5f5;
-    --poster-color: transparent;
-  }
-
-  @media (max-width: 576px) {
-    model-viewer {
-      height: 50vh;
-    }
-  }
-
-  /* 3D Dimension Lines - Android WebXR */
-  .dimensionLineContainer {
+  <style>
+  /* 3D Dimension Lines */
+.dimensionLineContainer {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
     z-index: 10;
   }
-  
-  .dimensionLine {
+.dimensionLine {
     stroke: #FFC107;
-    stroke-width: 2;
-    stroke-dasharray: 2;
+    stroke-width: 3;
   }
-  
-  .dim {
-    background: rgba(255, 193, 7, 0.95);
+.dim {
+    background: rgba(240, 240, 240, 0.95);
     color: #000;
     border-radius: 12px;
     border: 1px solid #FFC107;
     padding: 4px 10px;
     font-size: 12px;
     font-weight: 600;
-    transform: translate(-50%, -50%);
+    transform: translate3d(-50%, -50%, 0);
     pointer-events: none;
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     position: absolute;
     white-space: nowrap;
     z-index: 11;
   }
-  
-  .hide { display: none; }
-  
-  /* CRITICAL FIX: Remove display:none */
-  .dot { 
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
-  }
+.hide { display: none; }
+.dot { display: none; }
 
-  #ar-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-  }
-
-  /* OLD 2-BUTTON FOLDER ITEM LAYOUT */
-  .folder-items {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 15px;
-    padding: 15px 0;
-  }
-
-  .folder-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 12px;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
-  }
-
-  .folder-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  }
-
-  .folder-item img {
-    width: 70px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 8px;
-  }
-
-  .folder-item span {
-    font-size: 12px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
-    text-align: center;
-    min-height: 32px;
-    display: flex;
-    align-items: center;
-  }
-
-  .item-actions {
-    display: flex;
-    gap: 5px;
-    width: 100%;
-  }
-
-  .btn-quote, .btn-view-ar {
-    flex: 1;
-    padding: 6px 4px;
-    border: none;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-quote {
-    background: #000;
-    color: #fff;
-  }
-
-  .btn-quote:hover {
-    background: #333;
-  }
-
-  .btn-view-ar {
-    background: #FFC107;
-    color: #000;
-  }
-
-  .btn-view-ar:hover {
-    background: #ffb300;
-  }
-</style>
+ model-viewer {
+   position: relative;
+ }
+  </style>
 </head>
 
 <body>
@@ -378,6 +192,7 @@
                   </div>
                 </div>
               </div>
+            </div>
             <div class="carousel-item">
               <div class="row">
                 <div class="col-md-6">
@@ -459,38 +274,22 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <div class="folder-item" data-product-name="Dosa plate LPG" data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb">
+              <a href="#" class="folder-item" data-product-name="Dosa plate LPG" data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb">
                 <img src="images/t-1.jpg" alt="">
                 <span>Dosa plate LPG</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
-              <div class="folder-item" data-product-name="Dosa side table" data-model="models/work-table.glb">
+              </a>
+              <a href="#" class="folder-item" data-product-name="Dosa side table" data-model="models/work-table.glb">
                 <img src="images/t-2.jpg" alt="">
                 <span>Dosa side table</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
-              <div class="folder-item" data-product-name="Dosa Masala table" data-model="">
+              </a>
+              <a href="#" class="folder-item" data-product-name="Dosa Masala table" data-model="">
                 <img src="images/t-3.jpg" alt="">
                 <span>Dosa Masala table</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
-              <div class="folder-item" data-product-name="Dosa 4 vessel table" data-model="">
+              </a>
+              <a href="#" class="folder-item" data-product-name="Dosa 4 vessel table" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Dosa 4 vessel table</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -512,22 +311,14 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <div class="folder-item" data-product-name="Stall Counter" data-model="">
+              <a href="#" class="folder-item" data-product-name="Stall Counter" data-model="">
                 <img src="images/t-3.jpg" alt="">
                 <span>Stall Counter</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
-              <div class="folder-item" data-product-name="Parcel Table" data-model="">
+              </a>
+              <a href="#" class="folder-item" data-product-name="Parcel Table" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Parcel Table</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -549,22 +340,14 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <div class="folder-item" data-product-name="Juice Counter" data-model="">
+              <a href="#" class="folder-item" data-product-name="Juice Counter" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Juice Counter</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
-              <div class="folder-item" data-product-name="Chat Stall" data-model="">
+              </a>
+              <a href="#" class="folder-item" data-product-name="Chat Stall" data-model="">
                 <img src="images/t-1.jpg" alt="">
                 <span>Chat Stall</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -586,22 +369,14 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <div class="folder-item" data-product-name="Plate Rack" data-model="">
+              <a href="#" class="folder-item" data-product-name="Plate Rack" data-model="">
                 <img src="images/t-1.jpg" alt="">
                 <span>Plate Rack</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
-              <div class="folder-item" data-product-name="Wash Sink" data-model="">
+              </a>
+              <a href="#" class="folder-item" data-product-name="Wash Sink" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Wash Sink</span>
-                <div class="item-actions">
-                  <button class="btn-quote">Get Quote</button>
-                  <button class="btn-view-ar">View AR</button>
-                </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>
@@ -632,6 +407,7 @@
         <div class="folder-box" data-folder="6">
           <div class="folder-preview">
             <div class="folder-icon">
+              <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
@@ -936,7 +712,7 @@
   </section>
   <!-- end client section -->
 
-    <!-- info section -->
+  <!-- info section -->
   <section class="info_section layout_padding2">
     <div class="container">
       <div class="info_logo">
@@ -965,6 +741,7 @@
             <h5>Informations</h5>
             <p>Venus delivers stainless steel kitchen solutions engineered for durability, hygiene, and performance.</p>
           </div>
+        </div>
         <div class="col-md-3">
           <div class="info_insta">
             <h5>Instagram</h5>
@@ -1096,193 +873,171 @@
       });
     });
 
-// 3D Product Viewer Logic with Dynamic Dimensions
-    const product3dModal = document.getElementById('product3dModal');
-    const product3dViewer = document.getElementById('product3dViewer');
-    const product3dTitle = document.getElementById('product3dTitle');
-    const close3dModal = document.getElementById('close3dModal');
-    const arButton = document.getElementById('arButton');
-    const dimLines = document.getElementById('dimLines');
-    const dimX = document.getElementById('dimX');
-    const dimY = document.getElementById('dimY');
-    const dimZ = document.getElementById('dimZ');
+// 3D Product Viewer with Live AR Dimensions - Android WebXR
+const product3dModal = document.getElementById('product3dModal');
+const product3dViewer = document.getElementById('product3dViewer');
+const product3dTitle = document.getElementById('product3dTitle');
+const close3dModal = document.getElementById('close3dModal');
+const arButton = document.getElementById('arButton');
+const dimLines = document.getElementById('dimLines');
+const dimX = document.getElementById('dimX');
+const dimY = document.getElementById('dimY');
+const dimZ = document.getElementById('dimZ');
 
-    let baseDimensions = null;
-    let animationFrameId = null;
+let baseDimensions = null;
+let animationFrameId = null;
 
-    function drawLine(svgLine, p1, p2) {
-      if (!p1 ||!p2) return;
-      svgLine.setAttribute('x1', p1.x);
-      svgLine.setAttribute('y1', p1.y);
-      svgLine.setAttribute('x2', p2.x);
-      svgLine.setAttribute('y2', p2.y);
+function drawLine(svgLine, p1, p2) {
+  if (!p1 ||!p2) return;
+  svgLine.setAttribute('x1', p1.x);
+  svgLine.setAttribute('y1', p1.y);
+  svgLine.setAttribute('x2', p2.x);
+  svgLine.setAttribute('y2', p2.y);
+}
+
+function setupDimensions() {
+  const dimensions = product3dViewer.getDimensions();
+  if (!dimensions ||!dimensions.x || product3dViewer.loaded!== true) {
+    setTimeout(setupDimensions, 100);
+    return;
+  }
+
+  baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
+
+  const center = product3dViewer.getCameraTarget();
+  const halfX = dimensions.x * 0.5;
+  const halfY = dimensions.y * 0.5;
+  const halfZ = dimensions.z * 0.5;
+
+  const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
+  const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
+
+  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+
+  setTimeout(() => {
+    requestAnimationFrame(renderDimensions);
+  }, 500);
+}
+
+function renderDimensions() {
+  if (!baseDimensions) return;
+
+  // This scale value updates live in WebXR AR when user pinches
+  const scale = product3dViewer.scale;
+  const scaleX = scale.x || 1;
+  const scaleY = scale.y || 1;
+  const scaleZ = scale.z || 1;
+
+  const lines = dimLines.querySelectorAll('.dimensionLine');
+
+  const h1 = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+  const h2 = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+  const h3 = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+  const h4 = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+
+  if (h1?.canvasPosition && h2?.canvasPosition) {
+    const c1 = h1.canvasPosition;
+    const c2 = h2.canvasPosition;
+    const lengthIn = baseDimensions.x * scaleX * 39.37;
+    dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
+    dimX.style.left = (c1.x + c2.x) / 2 + 'px';
+    dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
+    dimX.classList.remove('hide');
+    drawLine(lines[0], c1, c2);
+  }
+
+  if (h2?.canvasPosition && h3?.canvasPosition) {
+    const c2 = h2.canvasPosition;
+    const c3 = h3.canvasPosition;
+    const heightIn = baseDimensions.y * scaleY * 39.37;
+    dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
+    dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
+    dimY.style.top = (c2.y + c3.y) / 2 + 'px';
+    dimY.classList.remove('hide');
+    drawLine(lines[1], c2, c3);
+  }
+
+  if (h2?.canvasPosition && h4?.canvasPosition) {
+    const c2 = h2.canvasPosition;
+    const c4 = h4.canvasPosition;
+    const breadthIn = baseDimensions.z * scaleZ * 39.37;
+    dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
+    dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
+    dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
+    dimZ.classList.remove('hide');
+    drawLine(lines[2], c2, c4);
+  }
+
+  animationFrameId = requestAnimationFrame(renderDimensions);
+}
+
+function stopRendering() {
+  if (animationFrameId) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = null;
+  }
+}
+
+product3dViewer.addEventListener('load', () => {
+  setTimeout(setupDimensions, 300);
+});
+
+product3dViewer.addEventListener('camera-change', () => {
+  if (!animationFrameId) renderDimensions();
+});
+
+// Start/stop render loop for AR
+product3dViewer.addEventListener('ar-status', (event) => {
+  if (event.detail.status === 'session-started') {
+    renderDimensions(); // WebXR AR started - keep rendering
+  } else if (event.detail.status === 'not-presenting') {
+    // AR ended
+  }
+});
+
+document.querySelectorAll('.folder-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    e.preventDefault();
+    const productName = this.getAttribute('data-product-name') || 'Product';
+    const modelUrl = this.getAttribute('data-model') || '';
+
+    if (!modelUrl) {
+      alert('3D model coming soon for ' + productName);
+      return;
     }
 
-    function setupDimensions() {
-      const dimensions = product3dViewer.getDimensions();
-      if (!dimensions ||!dimensions.x) {
-        setTimeout(setupDimensions, 100);
-        return;
-      }
+    product3dTitle.textContent = productName;
+    [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
+    baseDimensions = null;
+    stopRendering();
+    product3dViewer.src = modelUrl;
+    product3dModal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  });
+});
 
-      // Store base dimensions in meters
-      baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
+close3dModal.addEventListener('click', () => {
+  product3dModal.classList.remove('active');
+  document.body.style.overflow = '';
+  product3dViewer.src = '';
+  stopRendering();
+});
 
-      const center = product3dViewer.getCameraTarget();
-      if (!center ||!center.x) {
-        setTimeout(setupDimensions, 100);
-        return;
-      }
+product3dModal.addEventListener('click', (e) => {
+  if (e.target === product3dModal) {
+    product3dModal.classList.remove('active');
+    document.body.style.overflow = '';
+    product3dViewer.src = '';
+    stopRendering();
+  }
+});
 
-      const halfX = dimensions.x * 0.5;
-      const halfY = dimensions.y * 0.5;
-      const halfZ = dimensions.z * 0.5;
-
-      const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
-      const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
-
-      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
-
-      requestAnimationFrame(() => {
-        requestAnimationFrame(renderDimensions);
-      });
-    }
-
-    function renderDimensions() {
-      if (!baseDimensions) return;
-
-      // Get current scale - this updates in AR when user pinch-zooms
-      const scale = product3dViewer.scale;
-      const scaleX = scale.x || 1;
-      const scaleY = scale.y || 1;
-      const scaleZ = scale.z || 1;
-
-      const lines = dimLines.querySelectorAll('.dimensionLine');
-
-      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-      const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
-
-      if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
-        animationFrameId = requestAnimationFrame(renderDimensions);
-        return;
-      }
-
-      // Length - X axis, scaled
-      const c1 = minXminYminZ.canvasPosition;
-      const c2 = maxXminYminZ.canvasPosition;
-      const lengthM = baseDimensions.x * scaleX;
-      const lengthIn = lengthM * 39.37;
-      dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
-      dimX.style.left = (c1.x + c2.x) / 2 + 'px';
-      dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
-      dimX.classList.remove('hide');
-      drawLine(lines[0], c1, c2);
-
-      // Height - Y axis, scaled
-      if (maxXmaxYminZ?.canvasPosition) {
-        const c3 = maxXmaxYminZ.canvasPosition;
-        const heightM = baseDimensions.y * scaleY;
-        const heightIn = heightM * 39.37;
-        dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
-        dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
-        dimY.style.top = (c2.y + c3.y) / 2 + 'px';
-        dimY.classList.remove('hide');
-        drawLine(lines[1], c2, c3);
-      }
-
-      // Breadth - Z axis, scaled
-      if (maxXminYmaxZ?.canvasPosition) {
-        const c4 = maxXminYmaxZ.canvasPosition;
-        const breadthM = baseDimensions.z * scaleZ;
-        const breadthIn = breadthM * 39.37;
-        dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
-        dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
-        dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
-        dimZ.classList.remove('hide');
-        drawLine(lines[2], c2, c4);
-      }
-
-      // Keep rendering to catch AR scale changes
-      animationFrameId = requestAnimationFrame(renderDimensions);
-    }
-
-    function stopRendering() {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-      }
-    }
-
-    product3dViewer.addEventListener('load', () => {
-      setTimeout(setupDimensions, 300);
-    });
-
-    product3dViewer.addEventListener('camera-change', () => {
-      if (!animationFrameId) renderDimensions();
-    });
-
-    // AR specific events - this fixes mobile + scaling
-    product3dViewer.addEventListener('ar-status', (event) => {
-      if (event.detail.status === 'session-started') {
-        // Start continuous render loop in AR
-        renderDimensions();
-      } else if (event.detail.status === 'not-presenting') {
-        stopRendering();
-      }
-    });
-
-    document.querySelectorAll('.folder-item').forEach(item => {
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        const productName = this.getAttribute('data-product-name') || 'Product';
-        const modelUrl = this.getAttribute('data-model') || '';
-
-        if (!modelUrl) {
-          alert('3D model coming soon for ' + productName);
-          return;
-        }
-
-        product3dTitle.textContent = productName;
-        [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
-        baseDimensions = null;
-        stopRendering();
-        product3dViewer.src = modelUrl;
-        product3dModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-
-    close3dModal.addEventListener('click', () => {
-      product3dModal.classList.remove('active');
-      document.body.style.overflow = '';
-      product3dViewer.src = '';
-      stopRendering();
-    });
-
-    product3dModal.addEventListener('click', (e) => {
-      if (e.target === product3dModal) {
-        product3dModal.classList.remove('active');
-        document.body.style.overflow = '';
-        product3dViewer.src = '';
-        stopRendering();
-      }
-    });
-
-    arButton.addEventListener('click', () => {
-      product3dViewer.activateAR();
-    });
-
-    if (history.scrollRestoration) {
-      history.scrollRestoration = 'manual';
-    }
-    window.onbeforeunload = function () {
-      window.scrollTo(0, 0);
-    }
+arButton.addEventListener('click', () => {
+  product3dViewer.activateAR();
+});
   </script>
 </body>
-</html>
+</html> is this index ok?
