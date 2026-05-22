@@ -394,7 +394,7 @@ a:focus {
   border-color: var(--accent);
   color: var(--dark);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(128, 2, 0.3);
+  box-shadow: 0 5px 15px rgba(128, 2, 2, 0.3);
 }
 
 .slider_section .btn-box {
@@ -1113,7 +1113,7 @@ a:focus {
   width: 90%;
   max-width: 700px;
   max-height: 80vh;
-  background: rgba(255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-radius: 25px;
@@ -1319,7 +1319,7 @@ a:focus {
 model-viewer {
   width: 100%;
   height: 60vh;
-  background-color: #f5f5;
+  background-color: #f5f5f5;
   --poster-color: transparent;
   position: relative;
 }
