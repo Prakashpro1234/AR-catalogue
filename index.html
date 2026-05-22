@@ -848,109 +848,155 @@ model-viewer::part(default-ar-button) {
   <!-- end footer section -->
 
 <script src="js/jquery-3.4.1.min.js"></script>
-  <script src="js/bootstrap.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
-  <!-- Google Model Viewer -->
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
+<!-- Google Model Viewer -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 
-  <script>
-    // Owl Carousel init
-    $(".owl-carousel").owlCarousel({
-      loop: true,
-      margin: 10,
-      nav: true,
-      navText: [],
-      autoplay: true,
-      autoplayHoverPause: true,
-      responsive: {
-        0: { items: 1 },
-        420: { items: 2 },
-        1000: { items: 5 }
-      }
-    });
+<script>
+  // Owl Carousel init
+  $(".owl-carousel").owlCarousel({
+    loop: true,
+    margin: 10,
+    nav: true,
+    navText: [],
+    autoplay: true,
+    autoplayHoverPause: true,
+    responsive: {
+      0: { items: 1 },
+      420: { items: 2 },
+      1000: { items: 5 }
+    }
+  });
 
+  // Run after DOM loads
+  document.addEventListener('DOMContentLoaded', function() {
     // Slide menu toggle
     const menuToggle = document.getElementById('menuToggle');
     const slideMenu = document.getElementById('slideMenu');
     const menuOverlay = document.getElementById('menuOverlay');
 
     function toggleMenu() {
+      if (!menuToggle ||!slideMenu) return;
       menuToggle.classList.toggle('active');
       slideMenu.classList.toggle('active');
       document.body.style.overflow = slideMenu.classList.contains('active')? 'hidden' : '';
     }
 
-    menuToggle.addEventListener('click', toggleMenu);
-    menuOverlay.addEventListener('click', toggleMenu);
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
 
     document.querySelectorAll('.slide-menu.nav-link').forEach(link => {
       link.addEventListener('click', () => {
-        menuToggle.classList.remove('active');
-        slideMenu.classList.remove('active');
+        if (menuToggle) menuToggle.classList.remove('active');
+        if (slideMenu) slideMenu.classList.remove('active');
         document.body.style.overflow = '';
       });
     });
 
-    // Search form - redirects to furniture.html
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-      if(searchTerm) {
-        window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+    // Search form
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+      searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        if (searchTerm) {
+          window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+        }
+      });
+    }
+
+    // Android Folder System
+    const folders = document.querySelectorAll('.folder-box');
+    const backdrop = document.querySelector('.folder-backdrop');
+
+    folders.forEach(folder => {
+      const preview = folder.querySelector('.folder-preview');
+      const closeBtn = folder.querySelector('.close-folder');
+
+      if (preview) {
+        preview.addEventListener('click', () => {
+          folder.classList.add('active');
+          if (backdrop) backdrop.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          folder.classList.remove('active');
+          if (backdrop) backdrop.classList.remove('active');
+          document.body.style.overflow = '';
+        });
       }
     });
 
-    // Android Folder System
-    document.addEventListener('DOMContentLoaded', function() {
-      const folders = document.querySelectorAll('.folder-box');
-      const backdrop = document.querySelector('.folder-backdrop');
-
-      folders.forEach(folder => {
-        const preview = folder.querySelector('.folder-preview');
-        const closeBtn = folder.querySelector('.close-folder');
-
-        preview.addEventListener('click', () => {
-          folder.classList.add('active');
-          backdrop.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        });
-
-        closeBtn.addEventListener('click', () => {
-          folder.classList.remove('active');
-          backdrop.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      });
-
+    if (backdrop) {
       backdrop.addEventListener('click', () => {
         document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
         backdrop.classList.remove('active');
         document.body.style.overflow = '';
       });
-    });
+    }
 
- // 3D Product Viewer Logic with Dynamic Dimensions
-   // 3D Product Viewer Logic - FIXED
-const product3dModal = document.getElementById('product3dModal');
-const product3dViewer = document.getElementById('product3dViewer');
-const product3dTitle = document.getElementById('product3dTitle');
-const close3dModal = document.getElementById('close3dModal');
-const arButton = document.getElementById('arButton');
-const modalQuoteBtn = document.getElementById('modalQuoteBtn'); 
+    // 3D Product Viewer Logic - FIXED
+    const product3dModal = document.getElementById('product3dModal');
+    const product3dViewer = document.getElementById('product3dViewer');
+    const product3dTitle = document.getElementById('product3dTitle');
+    const close3dModal = document.getElementById('close3dModal');
+    const arButton = document.getElementById('arButton');
+    const modalQuoteBtn = document.getElementById('modalQuoteBtn');
 
-let currentProductName = '';
-let renderLoopId = null;
+    // Dimension elements - create them if missing
+    let dimLines, dimX, dimY, dimZ;
+    if (product3dViewer) {
+      dimLines = product3dViewer.querySelector('.dimensionLineContainer');
+      if (dimLines) {
+        dimX = dimLines.querySelector('#dimX');
+        dimY = dimLines.querySelector('#dimY');
+        dimZ = dimLines.querySelector('#dimZ');
+      }
+    }
 
-    arButton.addEventListener('click', () => {
-  product3dViewer.activateAR();
-});
+    let currentProductName = '';
+    let animationFrameId = null; // Fixed: was renderLoopId but used animationFrameId
+    let baseDimensions = null;
 
-modalQuoteBtn.addEventListener('click', () => {
-  alert('Quote request for: ' + currentProductName);
-});
+    function stopRendering() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+    }
+
+    function close3dModalFn() {
+      if (product3dModal) product3dModal.classList.remove('active');
+      document.body.classList.remove('folder-open');
+      document.body.style.overflow = '';
+      if (product3dViewer) product3dViewer.src = '';
+      stopRendering();
+    }
+
+    if (close3dModal) close3dModal.addEventListener('click', close3dModalFn);
+
+    if (product3dModal) {
+      product3dModal.addEventListener('click', (e) => {
+        if (e.target === product3dModal) close3dModalFn();
+      });
+    }
+
+    if (arButton && product3dViewer) {
+      arButton.addEventListener('click', () => product3dViewer.activateAR());
+    }
+
+    if (modalQuoteBtn) {
+      modalQuoteBtn.addEventListener('click', () => {
+        alert('Quote request for: ' + currentProductName);
+      });
+    }
 
     function drawLine(svgLine, p1, p2) {
-      if (!p1 ||!p2) return;
+      if (!svgLine ||!p1 ||!p2) return;
       svgLine.setAttribute('x1', p1.x);
       svgLine.setAttribute('y1', p1.y);
       svgLine.setAttribute('x2', p2.x);
@@ -958,15 +1004,15 @@ modalQuoteBtn.addEventListener('click', () => {
     }
 
     function setupDimensions() {
+      if (!product3dViewer ||!dimLines) return;
+
       const dimensions = product3dViewer.getDimensions();
       if (!dimensions ||!dimensions.x) {
         setTimeout(setupDimensions, 100);
         return;
       }
 
-      // Store base dimensions in meters
       baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
-
       const center = product3dViewer.getCameraTarget();
       if (!center ||!center.x) {
         setTimeout(setupDimensions, 100);
@@ -976,7 +1022,6 @@ modalQuoteBtn.addEventListener('click', () => {
       const halfX = dimensions.x * 0.5;
       const halfY = dimensions.y * 0.5;
       const halfZ = dimensions.z * 0.5;
-
       const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
       const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
 
@@ -991,16 +1036,14 @@ modalQuoteBtn.addEventListener('click', () => {
     }
 
     function renderDimensions() {
-      if (!baseDimensions) return;
+      if (!baseDimensions ||!product3dViewer ||!dimLines) return;
 
-      // Get current scale - this updates in AR when user pinch-zooms
       const scale = product3dViewer.scale;
       const scaleX = scale.x || 1;
       const scaleY = scale.y || 1;
       const scaleZ = scale.z || 1;
 
       const lines = dimLines.querySelectorAll('.dimensionLine');
-
       const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
       const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
       const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
@@ -1011,22 +1054,23 @@ modalQuoteBtn.addEventListener('click', () => {
         return;
       }
 
-      // Length - X axis, scaled
-      const c1 = minXminYminZ.canvasPosition;
-      const c2 = maxXminYminZ.canvasPosition;
-      const lengthM = baseDimensions.x * scaleX;
-      const lengthIn = lengthM * 39.37;
-      dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
-      dimX.style.left = (c1.x + c2.x) / 2 + 'px';
-      dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
-      dimX.classList.remove('hide');
-      drawLine(lines[0], c1, c2);
+      // Length
+      if (dimX && lines[0]) {
+        const c1 = minXminYminZ.canvasPosition;
+        const c2 = maxXminYminZ.canvasPosition;
+        const lengthIn = (baseDimensions.x * scaleX) * 39.37;
+        dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
+        dimX.style.left = (c1.x + c2.x) / 2 + 'px';
+        dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
+        dimX.classList.remove('hide');
+        drawLine(lines[0], c1, c2);
+      }
 
-      // Height - Y axis, scaled
-      if (maxXmaxYminZ?.canvasPosition) {
+      // Height
+      if (dimY && lines[1] && maxXmaxYminZ?.canvasPosition) {
+        const c2 = maxXminYminZ.canvasPosition;
         const c3 = maxXmaxYminZ.canvasPosition;
-        const heightM = baseDimensions.y * scaleY;
-        const heightIn = heightM * 39.37;
+        const heightIn = (baseDimensions.y * scaleY) * 39.37;
         dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
         dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
         dimY.style.top = (c2.y + c3.y) / 2 + 'px';
@@ -1034,11 +1078,11 @@ modalQuoteBtn.addEventListener('click', () => {
         drawLine(lines[1], c2, c3);
       }
 
-      // Breadth - Z axis, scaled
-      if (maxXminYmaxZ?.canvasPosition) {
+      // Breadth
+      if (dimZ && lines[2] && maxXminYmaxZ?.canvasPosition) {
+        const c2 = maxXminYminZ.canvasPosition;
         const c4 = maxXminYmaxZ.canvasPosition;
-        const breadthM = baseDimensions.z * scaleZ;
-        const breadthIn = breadthM * 39.37;
+        const breadthIn = (baseDimensions.z * scaleZ) * 39.37;
         dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
         dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
         dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
@@ -1046,39 +1090,32 @@ modalQuoteBtn.addEventListener('click', () => {
         drawLine(lines[2], c2, c4);
       }
 
-      // Keep rendering to catch AR scale changes
       animationFrameId = requestAnimationFrame(renderDimensions);
     }
 
-    function stopRendering() {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-      }
+    if (product3dViewer) {
+      product3dViewer.addEventListener('load', () => {
+        setTimeout(setupDimensions, 300);
+      });
+
+      product3dViewer.addEventListener('camera-change', () => {
+        if (!animationFrameId) renderDimensions();
+      });
+
+      product3dViewer.addEventListener('ar-status', (event) => {
+        if (event.detail.status === 'session-started') {
+          renderDimensions();
+        } else if (event.detail.status === 'not-presenting') {
+          stopRendering();
+        }
+      });
     }
 
-    product3dViewer.addEventListener('load', () => {
-      setTimeout(setupDimensions, 300);
-    });
-
-    product3dViewer.addEventListener('camera-change', () => {
-      if (!animationFrameId) renderDimensions();
-    });
-
-    // AR specific events - this fixes mobile + scaling
-    product3dViewer.addEventListener('ar-status', (event) => {
-      if (event.detail.status === 'session-started') {
-        // Start continuous render loop in AR
-        renderDimensions();
-      } else if (event.detail.status === 'not-presenting') {
-        stopRendering();
-      }
-    });
-
+    // Click folder items to open 3D
     document.querySelectorAll('.folder-item').forEach(item => {
       item.addEventListener('click', function(e) {
         e.preventDefault();
-        const productName = this.getAttribute('data-product-name') || 'Product';
+        const productName = this.getAttribute('data-name') || this.getAttribute('data-product-name') || 'Product';
         const modelUrl = this.getAttribute('data-model') || '';
 
         if (!modelUrl) {
@@ -1086,42 +1123,25 @@ modalQuoteBtn.addEventListener('click', () => {
           return;
         }
 
-        product3dTitle.textContent = productName;
-        [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
+        currentProductName = productName;
+        if (product3dTitle) product3dTitle.textContent = productName;
+        [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
         baseDimensions = null;
         stopRendering();
-        product3dViewer.src = modelUrl;
-        product3dModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        if (product3dViewer) product3dViewer.src = modelUrl;
+        if (product3dModal) product3dModal.classList.add('active');
+        document.body.classList.add('folder-open');
       });
     });
 
-    close3dModal.addEventListener('click', () => {
-      product3dModal.classList.remove('active');
-      document.body.style.overflow = '';
-      product3dViewer.src = '';
-      stopRendering();
-    });
+  }); // end DOMContentLoaded
 
-    product3dModal.addEventListener('click', (e) => {
-      if (e.target === product3dModal) {
-        product3dModal.classList.remove('active');
-        document.body.style.overflow = '';
-        product3dViewer.src = '';
-        stopRendering();
-      }
-    });
-
-    arButton.addEventListener('click', () => {
-      product3dViewer.activateAR();
-    });
-
-    if (history.scrollRestoration) {
-      history.scrollRestoration = 'manual';
-    }
-    window.onbeforeunload = function () {
-      window.scrollTo(0, 0);
-    }
-  </script>
+  if (history.scrollRestoration) {
+    history.scrollRestoration = 'manual';
+  }
+  window.onbeforeunload = function () {
+    window.scrollTo(0, 0);
+  }
+</script>
 </body>
 </html>
