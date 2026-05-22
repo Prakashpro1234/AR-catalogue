@@ -1128,10 +1128,16 @@ if (product3dViewer) {
 
   product3dViewer.addEventListener('ar-status', (event) => {
     if (event.detail.status === 'session-started') {
+      // AR started - hide dimension overlays, they won't work in AR
       stopRendering();
-      setTimeout(() => renderDimensions(), 500);
+      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+      lines.forEach(l => l.style.display = 'none');
     } else if (event.detail.status === 'not-presenting') {
-      stopRendering();
+      // Back to 3D view - show dimensions again
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+      lines.forEach(l => l.style.display = '');
+      renderDimensions();
     }
   });
 
