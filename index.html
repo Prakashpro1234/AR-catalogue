@@ -888,29 +888,38 @@
     }
 
     function updateDimensions() {
-      // model-viewer 3.3+ uses getDimensions, not getBoundingBox
+      // model-viewer 3.3+ returns {x, y, z} object, not Vector3
       const dimensions = product3dViewer.getDimensions();
-      if (!dimensions) {
+      if (!dimensions ||!dimensions.x) {
         requestAnimationFrame(updateDimensions);
         return;
       }
 
       const center = product3dViewer.getCameraTarget();
-      const half = dimensions.multiplyScalar(0.5);
-      const min = center.sub(half);
-      const max = center.add(half);
+      if (!center ||!center.x) {
+        requestAnimationFrame(updateDimensions);
+        return;
+      }
+
+      // Manual math since it's not THREE.Vector3
+      const halfX = dimensions.x * 0.5;
+      const halfY = dimensions.y * 0.5;
+      const halfZ = dimensions.z * 0.5;
+
+      const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
+      const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
 
       // Get 3D positions of corners
-      const p1 = {position: min}; // minX, minY, minZ
-      const p2 = {position: {x: max.x, y: min.y, z: min.z}}; // maxX, minY, minZ
-      const p3 = {position: {x: max.x, y: max.y, z: min.z}}; // maxX, maxY, minZ
-      const p4 = {position: {x: max.x, y: min.y, z: max.z}}; // maxX, minY, maxZ
+      const p1 = min; // minX, minY, minZ
+      const p2 = { x: max.x, y: min.y, z: min.z }; // maxX, minY, minZ
+      const p3 = { x: max.x, y: max.y, z: min.z }; // maxX, maxY, minZ
+      const p4 = { x: max.x, y: min.y, z: max.z }; // maxX, minY, maxZ
 
       // Convert to canvas coords
-      const c1 = product3dViewer.toCanvasPosition(p1.position);
-      const c2 = product3dViewer.toCanvasPosition(p2.position);
-      const c3 = product3dViewer.toCanvasPosition(p3.position);
-      const c4 = product3dViewer.toCanvasPosition(p4.position);
+      const c1 = product3dViewer.toCanvasPosition(p1);
+      const c2 = product3dViewer.toCanvasPosition(p2);
+      const c3 = product3dViewer.toCanvasPosition(p3);
+      const c4 = product3dViewer.toCanvasPosition(p4);
 
       if (!c1 ||!c2) {
         requestAnimationFrame(updateDimensions);
