@@ -517,8 +517,16 @@
   </section>
   <!-- end trending section -->
 
- <!-- 3D Product Viewer Modal -->
-  <model-viewer
+<!-- 3D Product Viewer Modal -->
+  <div class="product-3d-modal" id="product3dModal">
+    <div class="product-3d-container">
+      <div class="product-3d-header">
+        <h3 id="product3dTitle">Product Name</h3>
+        <button class="close-3d" id="close3dModal">×</button>
+      </div>
+
+      <div style="position: relative;">
+        <model-viewer
           id="product3dViewer"
           src=""
           ar
@@ -537,14 +545,12 @@
           <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
         </model-viewer>
 
-        <!-- SVG overlay - NOT inside model-viewer -->
         <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
         </svg>
 
-        <!-- Dimension labels - NOT inside model-viewer -->
         <div class="dim hide" id="dimX"></div>
         <div class="dim hide" id="dimY"></div>
         <div class="dim hide" id="dimZ"></div>
@@ -556,6 +562,7 @@
       </div>
     </div>
   </div>
+  <!-- end 3D modal -->
 
   <!-- discount section -->
   <section class="discount_section layout_padding">
@@ -875,6 +882,9 @@
     const dimY = document.getElementById('dimY');
     const dimZ = document.getElementById('dimZ');
 
+    let baseDimensions = null;
+    let animationFrameId = null;
+
     function drawLine(svgLine, p1, p2) {
       if (!p1 ||!p2) return;
       svgLine.setAttribute('x1', p1.x);
@@ -884,12 +894,14 @@
     }
 
     function setupDimensions() {
-      // model-viewer 3.3+ uses getDimensions, not getBoundingBox
       const dimensions = product3dViewer.getDimensions();
       if (!dimensions ||!dimensions.x) {
         setTimeout(setupDimensions, 100);
         return;
       }
+
+      // Store base dimensions in meters
+      baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
 
       const center = product3dViewer.getCameraTarget();
       if (!center ||!center.x) {
@@ -904,19 +916,25 @@
       const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
       const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
 
-      // Update invisible hotspot positions
       product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
 
-      // Wait 2 frames for hotspots to update
       requestAnimationFrame(() => {
         requestAnimationFrame(renderDimensions);
       });
     }
 
     function renderDimensions() {
+      if (!baseDimensions) return;
+
+      // Get current scale - this updates in AR when user pinch-zooms
+      const scale = product3dViewer.scale;
+      const scaleX = scale.x || 1;
+      const scaleY = scale.y || 1;
+      const scaleZ = scale.z || 1;
+
       const lines = dimLines.querySelectorAll('.dimensionLine');
 
       const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
@@ -925,24 +943,26 @@
       const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
 
       if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
-        requestAnimationFrame(renderDimensions);
+        animationFrameId = requestAnimationFrame(renderDimensions);
         return;
       }
 
-      // Length - X axis
+      // Length - X axis, scaled
       const c1 = minXminYminZ.canvasPosition;
       const c2 = maxXminYminZ.canvasPosition;
-      const lengthIn = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
+      const lengthM = baseDimensions.x * scaleX;
+      const lengthIn = lengthM * 39.37;
       dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
       dimX.style.left = (c1.x + c2.x) / 2 + 'px';
       dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
       dimX.classList.remove('hide');
       drawLine(lines[0], c1, c2);
 
-      // Height - Y axis
+      // Height - Y axis, scaled
       if (maxXmaxYminZ?.canvasPosition) {
         const c3 = maxXmaxYminZ.canvasPosition;
-        const heightIn = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
+        const heightM = baseDimensions.y * scaleY;
+        const heightIn = heightM * 39.37;
         dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
         dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
         dimY.style.top = (c2.y + c3.y) / 2 + 'px';
@@ -950,15 +970,26 @@
         drawLine(lines[1], c2, c3);
       }
 
-      // Breadth - Z axis
+      // Breadth - Z axis, scaled
       if (maxXminYmaxZ?.canvasPosition) {
         const c4 = maxXminYmaxZ.canvasPosition;
-        const breadthIn = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
+        const breadthM = baseDimensions.z * scaleZ;
+        const breadthIn = breadthM * 39.37;
         dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
         dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
         dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
         dimZ.classList.remove('hide');
         drawLine(lines[2], c2, c4);
+      }
+
+      // Keep rendering to catch AR scale changes
+      animationFrameId = requestAnimationFrame(renderDimensions);
+    }
+
+    function stopRendering() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
       }
     }
 
@@ -967,7 +998,17 @@
     });
 
     product3dViewer.addEventListener('camera-change', () => {
-      requestAnimationFrame(renderDimensions);
+      if (!animationFrameId) renderDimensions();
+    });
+
+    // AR specific events - this fixes mobile + scaling
+    product3dViewer.addEventListener('ar-status', (event) => {
+      if (event.detail.status === 'session-started') {
+        // Start continuous render loop in AR
+        renderDimensions();
+      } else if (event.detail.status === 'not-presenting') {
+        stopRendering();
+      }
     });
 
     document.querySelectorAll('.folder-item').forEach(item => {
@@ -983,6 +1024,8 @@
 
         product3dTitle.textContent = productName;
         [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
+        baseDimensions = null;
+        stopRendering();
         product3dViewer.src = modelUrl;
         product3dModal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -993,6 +1036,7 @@
       product3dModal.classList.remove('active');
       document.body.style.overflow = '';
       product3dViewer.src = '';
+      stopRendering();
     });
 
     product3dModal.addEventListener('click', (e) => {
@@ -1000,6 +1044,7 @@
         product3dModal.classList.remove('active');
         document.body.style.overflow = '';
         product3dViewer.src = '';
+        stopRendering();
       }
     });
 
