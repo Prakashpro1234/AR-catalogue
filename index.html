@@ -517,55 +517,46 @@
   </section>
   <!-- end trending section -->
 
-<!-- 3D Product Viewer Modal -->
-<div id="product3dModal" class="modal-3d">
-  <div class="modal-3d-content">
-    <div class="modal-3d-header">
-      <h3 id="product3dTitle">3D View</h3>
-      <button id="close3dModal" class="close-3d-modal">&times;</button>
-    </div>
-    <div class="modal-3d-body">
-      <model-viewer
-        id="product3dViewer"
-        src=""
-        alt="A 3D model of a product"
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        ar-scale="auto"
-        ar-placement="floor"
-        xr-environment
-        camera-controls
-        auto-rotate
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral">
+ <!-- 3D Product Viewer Modal -->
+  <model-viewer
+          id="product3dViewer"
+          src=""
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          camera-controls
+          auto-rotate
+          rotation-per-second="30deg"
+          shadow-intensity="1"
+          exposure="1"
+          environment-image="neutral"
+          alt="3D model">
 
-        <!-- Hidden hotspots for dimension calculation -->
-        <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0"></button>
-        <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0"></button>
-        <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0"></button>
-        <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0"></button>
+          <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
+        </model-viewer>
 
-        <!-- AR Overlay - this renders in WebXR on Android -->
-        <div slot="ar-overlay" id="ar-overlay">
-          <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
-            <line class="dimensionLine"></line>
-            <line class="dimensionLine"></line>
-            <line class="dimensionLine"></line>
-          </svg>
-          <div class="dim hide" id="dimX"></div>
-          <div class="dim hide" id="dimY"></div>
-          <div class="dim hide" id="dimZ"></div>
-        </div>
+        <!-- SVG overlay - NOT inside model-viewer -->
+        <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+        </svg>
 
-        <button slot="ar-button" id="arButton" class="ar-button">
-          View in your space
-        </button>
-      </model-viewer>
+        <!-- Dimension labels - NOT inside model-viewer -->
+        <div class="dim hide" id="dimX"></div>
+        <div class="dim hide" id="dimY"></div>
+        <div class="dim hide" id="dimZ"></div>
+      </div>
+
+      <div class="product-3d-actions">
+        <a href="contact.html" class="btn-quote">Get Quote</a>
+        <button class="btn-ar" id="arButton">View in AR</button>
+      </div>
     </div>
   </div>
-</div>
-  
+
   <!-- discount section -->
   <section class="discount_section layout_padding">
     <div class="container">
@@ -873,171 +864,155 @@
       });
     });
 
-// 3D Product Viewer with Live AR Dimensions - Android WebXR
-const product3dModal = document.getElementById('product3dModal');
-const product3dViewer = document.getElementById('product3dViewer');
-const product3dTitle = document.getElementById('product3dTitle');
-const close3dModal = document.getElementById('close3dModal');
-const arButton = document.getElementById('arButton');
-const dimLines = document.getElementById('dimLines');
-const dimX = document.getElementById('dimX');
-const dimY = document.getElementById('dimY');
-const dimZ = document.getElementById('dimZ');
+  // 3D Product Viewer Logic with Dynamic Dimensions
+    const product3dModal = document.getElementById('product3dModal');
+    const product3dViewer = document.getElementById('product3dViewer');
+    const product3dTitle = document.getElementById('product3dTitle');
+    const close3dModal = document.getElementById('close3dModal');
+    const arButton = document.getElementById('arButton');
+    const dimLines = document.getElementById('dimLines');
+    const dimX = document.getElementById('dimX');
+    const dimY = document.getElementById('dimY');
+    const dimZ = document.getElementById('dimZ');
 
-let baseDimensions = null;
-let animationFrameId = null;
-
-function drawLine(svgLine, p1, p2) {
-  if (!p1 ||!p2) return;
-  svgLine.setAttribute('x1', p1.x);
-  svgLine.setAttribute('y1', p1.y);
-  svgLine.setAttribute('x2', p2.x);
-  svgLine.setAttribute('y2', p2.y);
-}
-
-function setupDimensions() {
-  const dimensions = product3dViewer.getDimensions();
-  if (!dimensions ||!dimensions.x || product3dViewer.loaded!== true) {
-    setTimeout(setupDimensions, 100);
-    return;
-  }
-
-  baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
-
-  const center = product3dViewer.getCameraTarget();
-  const halfX = dimensions.x * 0.5;
-  const halfY = dimensions.y * 0.5;
-  const halfZ = dimensions.z * 0.5;
-
-  const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
-  const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
-
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
-
-  setTimeout(() => {
-    requestAnimationFrame(renderDimensions);
-  }, 500);
-}
-
-function renderDimensions() {
-  if (!baseDimensions) return;
-
-  // This scale value updates live in WebXR AR when user pinches
-  const scale = product3dViewer.scale;
-  const scaleX = scale.x || 1;
-  const scaleY = scale.y || 1;
-  const scaleZ = scale.z || 1;
-
-  const lines = dimLines.querySelectorAll('.dimensionLine');
-
-  const h1 = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-  const h2 = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-  const h3 = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-  const h4 = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
-
-  if (h1?.canvasPosition && h2?.canvasPosition) {
-    const c1 = h1.canvasPosition;
-    const c2 = h2.canvasPosition;
-    const lengthIn = baseDimensions.x * scaleX * 39.37;
-    dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
-    dimX.style.left = (c1.x + c2.x) / 2 + 'px';
-    dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
-    dimX.classList.remove('hide');
-    drawLine(lines[0], c1, c2);
-  }
-
-  if (h2?.canvasPosition && h3?.canvasPosition) {
-    const c2 = h2.canvasPosition;
-    const c3 = h3.canvasPosition;
-    const heightIn = baseDimensions.y * scaleY * 39.37;
-    dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
-    dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
-    dimY.style.top = (c2.y + c3.y) / 2 + 'px';
-    dimY.classList.remove('hide');
-    drawLine(lines[1], c2, c3);
-  }
-
-  if (h2?.canvasPosition && h4?.canvasPosition) {
-    const c2 = h2.canvasPosition;
-    const c4 = h4.canvasPosition;
-    const breadthIn = baseDimensions.z * scaleZ * 39.37;
-    dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
-    dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
-    dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
-    dimZ.classList.remove('hide');
-    drawLine(lines[2], c2, c4);
-  }
-
-  animationFrameId = requestAnimationFrame(renderDimensions);
-}
-
-function stopRendering() {
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId);
-    animationFrameId = null;
-  }
-}
-
-product3dViewer.addEventListener('load', () => {
-  setTimeout(setupDimensions, 300);
-});
-
-product3dViewer.addEventListener('camera-change', () => {
-  if (!animationFrameId) renderDimensions();
-});
-
-// Start/stop render loop for AR
-product3dViewer.addEventListener('ar-status', (event) => {
-  if (event.detail.status === 'session-started') {
-    renderDimensions(); // WebXR AR started - keep rendering
-  } else if (event.detail.status === 'not-presenting') {
-    // AR ended
-  }
-});
-
-document.querySelectorAll('.folder-item').forEach(item => {
-  item.addEventListener('click', function(e) {
-    e.preventDefault();
-    const productName = this.getAttribute('data-product-name') || 'Product';
-    const modelUrl = this.getAttribute('data-model') || '';
-
-    if (!modelUrl) {
-      alert('3D model coming soon for ' + productName);
-      return;
+    function drawLine(svgLine, p1, p2) {
+      if (!p1 ||!p2) return;
+      svgLine.setAttribute('x1', p1.x);
+      svgLine.setAttribute('y1', p1.y);
+      svgLine.setAttribute('x2', p2.x);
+      svgLine.setAttribute('y2', p2.y);
     }
 
-    product3dTitle.textContent = productName;
-    [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
-    baseDimensions = null;
-    stopRendering();
-    product3dViewer.src = modelUrl;
-    product3dModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-});
+    function setupDimensions() {
+      // model-viewer 3.3+ uses getDimensions, not getBoundingBox
+      const dimensions = product3dViewer.getDimensions();
+      if (!dimensions ||!dimensions.x) {
+        setTimeout(setupDimensions, 100);
+        return;
+      }
 
-close3dModal.addEventListener('click', () => {
-  product3dModal.classList.remove('active');
-  document.body.style.overflow = '';
-  product3dViewer.src = '';
-  stopRendering();
-});
+      const center = product3dViewer.getCameraTarget();
+      if (!center ||!center.x) {
+        setTimeout(setupDimensions, 100);
+        return;
+      }
 
-product3dModal.addEventListener('click', (e) => {
-  if (e.target === product3dModal) {
-    product3dModal.classList.remove('active');
-    document.body.style.overflow = '';
-    product3dViewer.src = '';
-    stopRendering();
-  }
-});
+      const halfX = dimensions.x * 0.5;
+      const halfY = dimensions.y * 0.5;
+      const halfZ = dimensions.z * 0.5;
 
-arButton.addEventListener('click', () => {
-  product3dViewer.activateAR();
-});
+      const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
+      const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
+
+      // Update invisible hotspot positions
+      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+
+      // Wait 2 frames for hotspots to update
+      requestAnimationFrame(() => {
+        requestAnimationFrame(renderDimensions);
+      });
+    }
+
+    function renderDimensions() {
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+
+      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+      const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+
+      if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
+        requestAnimationFrame(renderDimensions);
+        return;
+      }
+
+      // Length - X axis
+      const c1 = minXminYminZ.canvasPosition;
+      const c2 = maxXminYminZ.canvasPosition;
+      const lengthIn = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
+      dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
+      dimX.style.left = (c1.x + c2.x) / 2 + 'px';
+      dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
+      dimX.classList.remove('hide');
+      drawLine(lines[0], c1, c2);
+
+      // Height - Y axis
+      if (maxXmaxYminZ?.canvasPosition) {
+        const c3 = maxXmaxYminZ.canvasPosition;
+        const heightIn = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
+        dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
+        dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
+        dimY.style.top = (c2.y + c3.y) / 2 + 'px';
+        dimY.classList.remove('hide');
+        drawLine(lines[1], c2, c3);
+      }
+
+      // Breadth - Z axis
+      if (maxXminYmaxZ?.canvasPosition) {
+        const c4 = maxXminYmaxZ.canvasPosition;
+        const breadthIn = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
+        dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
+        dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
+        dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
+        dimZ.classList.remove('hide');
+        drawLine(lines[2], c2, c4);
+      }
+    }
+
+    product3dViewer.addEventListener('load', () => {
+      setTimeout(setupDimensions, 300);
+    });
+
+    product3dViewer.addEventListener('camera-change', () => {
+      requestAnimationFrame(renderDimensions);
+    });
+
+    document.querySelectorAll('.folder-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productName = this.getAttribute('data-product-name') || 'Product';
+        const modelUrl = this.getAttribute('data-model') || '';
+
+        if (!modelUrl) {
+          alert('3D model coming soon for ' + productName);
+          return;
+        }
+
+        product3dTitle.textContent = productName;
+        [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
+        product3dViewer.src = modelUrl;
+        product3dModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    close3dModal.addEventListener('click', () => {
+      product3dModal.classList.remove('active');
+      document.body.style.overflow = '';
+      product3dViewer.src = '';
+    });
+
+    product3dModal.addEventListener('click', (e) => {
+      if (e.target === product3dModal) {
+        product3dModal.classList.remove('active');
+        document.body.style.overflow = '';
+        product3dViewer.src = '';
+      }
+    });
+
+    arButton.addEventListener('click', () => {
+      product3dViewer.activateAR();
+    });
+
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
+    }
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    }
   </script>
 </body>
-</html> is this index ok?
+</html> is that right ?
