@@ -581,44 +581,41 @@ model-viewer::part(default-ar-button) {
         <button class="close-3d" id="close3dModal">×</button>
       </div>
 
-      <div style="position: relative;">
-        <model-viewer
-          id="product3dViewer"
-          src=""
-          ar
-          ar-modes="webxr scene-viewer quick-look"
-          camera-controls
-          auto-rotate
-          rotation-per-second="30deg"
-          shadow-intensity="1"
-          exposure="1"
-          environment-image="neutral"
-          alt="3D model">
+     <div style="position: relative;">
+  <model-viewer
+    id="product3dViewer"
+    src=""
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    camera-controls
+    auto-rotate
+    rotation-per-second="30deg"
+    shadow-intensity="1"
+    exposure="1"
+    environment-image="neutral"
+    alt="3D model">
 
-          <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0"></button>
-          <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0"></button>
-          <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0"></button>
-          <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
-        </model-viewer>
+    <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0"></button>
+    <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0"></button>
+    <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0"></button>
+    <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0"></button>
+  </model-viewer>
 
-        <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
-          <line class="dimensionLine"></line>
-          <line class="dimensionLine"></line>
-          <line class="dimensionLine"></line>
-        </svg>
+  <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
+    <line class="dimensionLine"></line>
+    <line class="dimensionLine"></line>
+    <line class="dimensionLine"></line>
+  </svg>
 
-        <div class="dim hide" id="dimX"></div>
-        <div class="dim hide" id="dimY"></div>
-        <div class="dim hide" id="dimZ"></div>
-      </div>
+  <div class="dim hide" id="dimX"></div>
+  <div class="dim hide" id="dimY"></div>
+  <div class="dim hide" id="dimZ"></div>
+</div>
 
-      <div class="product-3d-actions">
-        <button class="btn-quote" id="modalQuoteBtn">Get Quote</button>
-        <button class="btn-ar" id="arButton">View in AR</button>
-      </div>
-    </div>
-  </div>
-  <!-- end 3D modal -->
+<div class="product-3d-actions">
+  <button class="btn-quote" id="modalQuoteBtn">Get Quote</button>
+  <button class="btn-ar" id="arButton">View in AR</button>
+</div>
  <!-- end 3D Product Viewer Modal -->
 
   
@@ -939,7 +936,7 @@ model-viewer::part(default-ar-button) {
       });
     }
 
-    // 3D Product Viewer Logic - FIXED
+ // 3D Product Viewer Logic - FIXED
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
@@ -947,19 +944,14 @@ model-viewer::part(default-ar-button) {
     const arButton = document.getElementById('arButton');
     const modalQuoteBtn = document.getElementById('modalQuoteBtn');
 
-    // Dimension elements - create them if missing
-    let dimLines, dimX, dimY, dimZ;
-    if (product3dViewer) {
-      dimLines = product3dViewer.querySelector('.dimensionLineContainer');
-      if (dimLines) {
-        dimX = dimLines.querySelector('#dimX');
-        dimY = dimLines.querySelector('#dimY');
-        dimZ = dimLines.querySelector('#dimZ');
-      }
-    }
+    // Dimension elements - fixed: use document not viewer
+    const dimLines = document.getElementById('dimLines');
+    const dimX = document.getElementById('dimX');
+    const dimY = document.getElementById('dimY');
+    const dimZ = document.getElementById('dimZ');
 
     let currentProductName = '';
-    let animationFrameId = null; // Fixed: was renderLoopId but used animationFrameId
+    let animationFrameId = null;
     let baseDimensions = null;
 
     function stopRendering() {
@@ -974,6 +966,8 @@ model-viewer::part(default-ar-button) {
       document.body.classList.remove('folder-open');
       document.body.style.overflow = '';
       if (product3dViewer) product3dViewer.src = '';
+      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
+      baseDimensions = null;
       stopRendering();
     }
 
@@ -990,11 +984,11 @@ model-viewer::part(default-ar-button) {
     }
 
     if (modalQuoteBtn) {
-  modalQuoteBtn.addEventListener('click', () => {
-    // Pass product name to contact page via URL parameter
-    window.location.href = `contact.html?product=${encodeURIComponent(currentProductName)}`;
-  });
-}
+      modalQuoteBtn.addEventListener('click', () => {
+        window.location.href = `contact.html?product=${encodeURIComponent(currentProductName)}`;
+      });
+    }
+
     function drawLine(svgLine, p1, p2) {
       if (!svgLine ||!p1 ||!p2) return;
       svgLine.setAttribute('x1', p1.x);
