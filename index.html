@@ -44,7 +44,7 @@
   .modal-3d-content {
     width: 100%;
     max-width: 900px;
-    background: var(--white);
+    background: var(--white, #fff);
     border-radius: 20px;
     overflow: hidden;
     transform: scale(0.9);
@@ -60,15 +60,15 @@
     justify-content: space-between;
     align-items: center;
     padding: 20px 25px;
-    border-bottom: 2px solid var(--accent);
-    background: var(--light);
+    border-bottom: 2px solid var(--accent, #FFC107);
+    background: var(--light, #f8f9fa);
   }
 
   .modal-3d-header h3 {
     margin: 0;
     font-family: 'Poppins', sans-serif;
     font-size: 20px;
-    color: var(--primary);
+    color: var(--primary, #000);
     font-weight: 700;
   }
 
@@ -76,8 +76,8 @@
     width: 35px;
     height: 35px;
     border: none;
-    background: var(--primary);
-    color: var(--white);
+    background: var(--primary, #000);
+    color: var(--white, #fff);
     border-radius: 50%;
     font-size: 24px;
     cursor: pointer;
@@ -86,7 +86,7 @@
   }
 
   .close-3d-modal:hover {
-    background: var(--accent);
+    background: var(--accent, #FFC107);
     transform: rotate(90deg);
   }
 
@@ -157,6 +157,84 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
+  }
+
+  /* OLD 2-BUTTON FOLDER ITEM LAYOUT */
+  .folder-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+    padding: 15px 0;
+  }
+
+  .folder-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+  }
+
+  .folder-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .folder-item img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .folder-item span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    text-align: center;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+  }
+
+  .item-actions {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+  }
+
+  .btn-quote, .btn-view-ar {
+    flex: 1;
+    padding: 6px 4px;
+    border: none;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-quote {
+    background: #000;
+    color: #fff;
+  }
+
+  .btn-quote:hover {
+    background: #333;
+  }
+
+  .btn-view-ar {
+    background: #FFC107;
+    color: #000;
+  }
+
+  .btn-view-ar:hover {
+    background: #ffb300;
   }
 </style>
 </head>
@@ -300,7 +378,6 @@
                   </div>
                 </div>
               </div>
-            </div>
             <div class="carousel-item">
               <div class="row">
                 <div class="col-md-6">
@@ -382,22 +459,38 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item" data-product-name="Dosa plate LPG" data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb">
+              <div class="folder-item" data-product-name="Dosa plate LPG" data-model="https://modelviewer.dev/shared-assets/models/Astronaut.glb">
                 <img src="images/t-1.jpg" alt="">
                 <span>Dosa plate LPG</span>
-              </a>
-              <a href="#" class="folder-item" data-product-name="Dosa side table" data-model="models/work-table.glb">
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
+              <div class="folder-item" data-product-name="Dosa side table" data-model="models/work-table.glb">
                 <img src="images/t-2.jpg" alt="">
                 <span>Dosa side table</span>
-              </a>
-              <a href="#" class="folder-item" data-product-name="Dosa Masala table" data-model="">
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
+              <div class="folder-item" data-product-name="Dosa Masala table" data-model="">
                 <img src="images/t-3.jpg" alt="">
                 <span>Dosa Masala table</span>
-              </a>
-              <a href="#" class="folder-item" data-product-name="Dosa 4 vessel table" data-model="">
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
+              <div class="folder-item" data-product-name="Dosa 4 vessel table" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Dosa 4 vessel table</span>
-              </a>
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -419,14 +512,22 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item" data-product-name="Stall Counter" data-model="">
+              <div class="folder-item" data-product-name="Stall Counter" data-model="">
                 <img src="images/t-3.jpg" alt="">
                 <span>Stall Counter</span>
-              </a>
-              <a href="#" class="folder-item" data-product-name="Parcel Table" data-model="">
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
+              <div class="folder-item" data-product-name="Parcel Table" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Parcel Table</span>
-              </a>
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -448,14 +549,22 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item" data-product-name="Juice Counter" data-model="">
+              <div class="folder-item" data-product-name="Juice Counter" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Juice Counter</span>
-              </a>
-              <a href="#" class="folder-item" data-product-name="Chat Stall" data-model="">
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
+              <div class="folder-item" data-product-name="Chat Stall" data-model="">
                 <img src="images/t-1.jpg" alt="">
                 <span>Chat Stall</span>
-              </a>
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -477,14 +586,22 @@
               <button class="close-folder">×</button>
             </div>
             <div class="folder-items">
-              <a href="#" class="folder-item" data-product-name="Plate Rack" data-model="">
+              <div class="folder-item" data-product-name="Plate Rack" data-model="">
                 <img src="images/t-1.jpg" alt="">
                 <span>Plate Rack</span>
-              </a>
-              <a href="#" class="folder-item" data-product-name="Wash Sink" data-model="">
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
+              <div class="folder-item" data-product-name="Wash Sink" data-model="">
                 <img src="images/t-4.jpg" alt="">
                 <span>Wash Sink</span>
-              </a>
+                <div class="item-actions">
+                  <button class="btn-quote">Get Quote</button>
+                  <button class="btn-view-ar">View AR</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -515,7 +632,6 @@
         <div class="folder-box" data-folder="6">
           <div class="folder-preview">
             <div class="folder-icon">
-              <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
               <img src="images/slider-img.png" alt="">
@@ -820,7 +936,7 @@
   </section>
   <!-- end client section -->
 
-  <!-- info section -->
+    <!-- info section -->
   <section class="info_section layout_padding2">
     <div class="container">
       <div class="info_logo">
@@ -849,7 +965,6 @@
             <h5>Informations</h5>
             <p>Venus delivers stainless steel kitchen solutions engineered for durability, hygiene, and performance.</p>
           </div>
-        </div>
         <div class="col-md-3">
           <div class="info_insta">
             <h5>Instagram</h5>
@@ -1033,7 +1148,6 @@ function setupDimensions() {
 function renderDimensions() {
   if (!baseDimensions) return;
 
-  // This scale value updates live in WebXR AR when user pinches
   const scale = product3dViewer.scale;
   const scaleX = scale.x || 1;
   const scaleY = scale.y || 1;
@@ -1097,20 +1211,19 @@ product3dViewer.addEventListener('camera-change', () => {
   if (!animationFrameId) renderDimensions();
 });
 
-// Start/stop render loop for AR
 product3dViewer.addEventListener('ar-status', (event) => {
   if (event.detail.status === 'session-started') {
-    renderDimensions(); // WebXR AR started - keep rendering
-  } else if (event.detail.status === 'not-presenting') {
-    // AR ended
+    renderDimensions();
   }
 });
 
-document.querySelectorAll('.folder-item').forEach(item => {
-  item.addEventListener('click', function(e) {
-    e.preventDefault();
-    const productName = this.getAttribute('data-product-name') || 'Product';
-    const modelUrl = this.getAttribute('data-model') || '';
+// UPDATED: Handle View AR button - old 2-button style
+document.querySelectorAll('.btn-view-ar').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const item = this.closest('.folder-item');
+    const productName = item.getAttribute('data-product-name') || 'Product';
+    const modelUrl = item.getAttribute('data-model') || '';
 
     if (!modelUrl) {
       alert('3D model coming soon for ' + productName);
@@ -1124,6 +1237,21 @@ document.querySelectorAll('.folder-item').forEach(item => {
     product3dViewer.src = modelUrl;
     product3dModal.classList.add('active');
     document.body.style.overflow = 'hidden';
+  });
+});
+
+// UPDATED: Handle Get Quote button
+document.querySelectorAll('.btn-quote').forEach(btn => {
+  btn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const item = this.closest('.folder-item');
+    const productName = item.getAttribute('data-product-name');
+
+    // Option 1: Redirect to contact page with product
+    window.location.href = `contact.html?product=${encodeURIComponent(productName)}`;
+
+    // Option 2: WhatsApp - uncomment to use instead
+    // window.open(`https://wa.me/919840617999?text=Hi, I need quote for ${encodeURIComponent(productName)}`, '_blank');
   });
 });
 
