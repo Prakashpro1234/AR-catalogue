@@ -525,42 +525,33 @@
         <button class="close-3d" id="close3dModal">×</button>
       </div>
 
-      <model-viewer
-        id="product3dViewer"
-        src=""
-        ar
-        ar-modes="webxr scene-viewer quick-look"
-        camera-controls
-        auto-rotate
-        rotation-per-second="30deg"
-        shadow-intensity="1"
-        exposure="1"
-        environment-image="neutral"
-        alt="3D model"
-        style="position: relative;">
+      <div style="position: relative;">
+        <model-viewer
+          id="product3dViewer"
+          src=""
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          camera-controls
+          auto-rotate
+          rotation-per-second="30deg"
+          shadow-intensity="1"
+          exposure="1"
+          environment-image="neutral"
+          alt="3D model">
+        </model-viewer>
 
-        <!-- All 8 corners of bounding box -->
-        <button slot="hotspot-dot-X-Y-Z" class="dot"></button>
-        <button slot="hotspot-dot+X-Y-Z" class="dot"></button>
-        <button slot="hotspot-dot+X+Y-Z" class="dot"></button>
-        <button slot="hotspot-dot-X+Y-Z" class="dot"></button>
-        <button slot="hotspot-dot-X-Y+Z" class="dot"></button>
-        <button slot="hotspot-dot+X-Y+Z" class="dot"></button>
-        <button slot="hotspot-dot+X+Y+Z" class="dot"></button>
-        <button slot="hotspot-dot-X+Y+Z" class="dot"></button>
-
-        <!-- 3 dimension labels -->
-        <button slot="hotspot-dim-X" class="dim"></button>
-        <button slot="hotspot-dim-Y" class="dim"></button>
-        <button slot="hotspot-dim-Z" class="dim"></button>
-
-        <!-- 3 lines -->
+        <!-- SVG overlay - NOT inside model-viewer -->
         <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
           <line class="dimensionLine"></line>
         </svg>
-      </model-viewer>
+
+        <!-- Dimension labels - NOT inside model-viewer -->
+        <div class="dim hide" id="dimX"></div>
+        <div class="dim hide" id="dimY"></div>
+        <div class="dim hide" id="dimZ"></div>
+      </div>
 
       <div class="product-3d-actions">
         <a href="contact.html" class="btn-quote">Get Quote</a>
