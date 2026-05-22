@@ -990,11 +990,11 @@ model-viewer::part(default-ar-button) {
     }
 
     if (modalQuoteBtn) {
-      modalQuoteBtn.addEventListener('click', () => {
-        alert('Quote request for: ' + currentProductName);
-      });
-    }
-
+  modalQuoteBtn.addEventListener('click', () => {
+    // Pass product name to contact page via URL parameter
+    window.location.href = `contact.html?product=${encodeURIComponent(currentProductName)}`;
+  });
+}
     function drawLine(svgLine, p1, p2) {
       if (!svgLine ||!p1 ||!p2) return;
       svgLine.setAttribute('x1', p1.x);
