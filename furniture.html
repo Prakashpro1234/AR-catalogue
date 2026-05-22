@@ -488,178 +488,306 @@
   <!-- end footer section -->
 
 <script src="js/jquery-3.4.1.min.js"></script>
-  <script src="js/bootstrap.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
-  <!-- Google Model Viewer -->
-  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+<script src="js/bootstrap.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
+<!-- Google Model Viewer -->
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 
-  <script>
-    // Owl Carousel init
-    $(".owl-carousel").owlCarousel({
-      loop: true,
-      margin: 10,
-      nav: true,
-      navText: [],
-      autoplay: true,
-      autoplayHoverPause: true,
-      responsive: {
-        0: { items: 1 },
-        420: { items: 2 },
-        1000: { items: 5 }
-      }
-    });
+<script>
+  // Owl Carousel init
+  $(".owl-carousel").owlCarousel({
+    loop: true,
+    margin: 10,
+    nav: true,
+    navText: [],
+    autoplay: true,
+    autoplayHoverPause: true,
+    responsive: {
+      0: { items: 1 },
+      420: { items: 2 },
+      1000: { items: 5 }
+    }
+  });
 
+  // Run after DOM loads
+  document.addEventListener('DOMContentLoaded', function() {
     // Slide menu toggle
     const menuToggle = document.getElementById('menuToggle');
     const slideMenu = document.getElementById('slideMenu');
     const menuOverlay = document.getElementById('menuOverlay');
 
     function toggleMenu() {
+      if (!menuToggle ||!slideMenu) return;
       menuToggle.classList.toggle('active');
       slideMenu.classList.toggle('active');
       document.body.style.overflow = slideMenu.classList.contains('active')? 'hidden' : '';
     }
 
-    menuToggle.addEventListener('click', toggleMenu);
-    menuOverlay.addEventListener('click', toggleMenu);
+    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+    if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
 
     document.querySelectorAll('.slide-menu.nav-link').forEach(link => {
       link.addEventListener('click', () => {
-        menuToggle.classList.remove('active');
-        slideMenu.classList.remove('active');
+        if (menuToggle) menuToggle.classList.remove('active');
+        if (slideMenu) slideMenu.classList.remove('active');
         document.body.style.overflow = '';
       });
     });
 
-    // Search form - redirects to furniture.html
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-      if(searchTerm) {
-        window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+    // Search form
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+      searchForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+        if (searchTerm) {
+          window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+        }
+      });
+    }
+
+    // Android Folder System
+    const folders = document.querySelectorAll('.folder-box');
+    const backdrop = document.querySelector('.folder-backdrop');
+
+    folders.forEach(folder => {
+      const preview = folder.querySelector('.folder-preview');
+      const closeBtn = folder.querySelector('.close-folder');
+
+      if (preview) {
+        preview.addEventListener('click', () => {
+          folder.classList.add('active');
+          if (backdrop) backdrop.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        });
+      }
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          folder.classList.remove('active');
+          if (backdrop) backdrop.classList.remove('active');
+          document.body.style.overflow = '';
+        });
       }
     });
 
-    // Android Folder System
-    document.addEventListener('DOMContentLoaded', function() {
-      const folders = document.querySelectorAll('.folder-box');
-      const backdrop = document.querySelector('.folder-backdrop');
-
-      folders.forEach(folder => {
-        const preview = folder.querySelector('.folder-preview');
-        const closeBtn = folder.querySelector('.close-folder');
-
-        preview.addEventListener('click', () => {
-          folder.classList.add('active');
-          backdrop.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        });
-
-        closeBtn.addEventListener('click', () => {
-          folder.classList.remove('active');
-          backdrop.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      });
-
+    if (backdrop) {
       backdrop.addEventListener('click', () => {
         document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
         backdrop.classList.remove('active');
         document.body.style.overflow = '';
       });
-    });
+    }
 
-    // 3D Product Viewer Logic with Dynamic Dimensions
+ // 3D Product Viewer Logic - FIXED
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
     const close3dModal = document.getElementById('close3dModal');
     const arButton = document.getElementById('arButton');
+    const modalQuoteBtn = document.getElementById('modalQuoteBtn');
 
-    function drawLine(svgLine, dot1, dot2) {
-      if (!dot1 ||!dot2) return;
-      svgLine.setAttribute('x1', dot1.canvasPosition.x);
-      svgLine.setAttribute('y1', dot1.canvasPosition.y);
-      svgLine.setAttribute('x2', dot2.canvasPosition.x);
-      svgLine.setAttribute('y2', dot2.canvasPosition.y);
-    }
+    // Dimension elements - fixed: use document not viewer
+    const dimLines = document.getElementById('dimLines');
+    const dimX = document.getElementById('dimX');
+    const dimY = document.getElementById('dimY');
+    const dimZ = document.getElementById('dimZ');
 
-    function renderDimensions() {
-      const lines = product3dViewer.querySelectorAll('.dimensionLine');
-      const dims = product3dViewer.querySelectorAll('.dim');
+    let currentProductName = '';
+    let animationFrameId = null;
+    let baseDimensions = null;
 
-      const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-      const maxXminYminZ = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-      const maxXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-      const minXmaxYminZ = product3dViewer.queryHotspot('hotspot-dot-X+Y-Z');
-
-      const dimLength = product3dViewer.queryHotspot('hotspot-dim-X');
-      const dimHeight = product3dViewer.queryHotspot('hotspot-dim-Y');
-      const dimBreadth = product3dViewer.queryHotspot('hotspot-dim-Z');
-
-      if (!minXminYminZ ||!maxXminYminZ ||!maxXmaxYminZ) {
-        lines.forEach(l => l.classList.add('hide'));
-        dims.forEach(d => d.classList.add('hide'));
-        return;
-      }
-
-      lines.forEach(l => l.classList.remove('hide'));
-      dims.forEach(d => d.classList.remove('hide'));
-
-      // Get real bbox for Z calculation
-      const bbox = product3dViewer.getBoundingBox();
-      const depth = Math.abs(bbox.max.z - bbox.min.z) * 39.37;
-
-      // Length = X axis
-      if (dimLength && minXminYminZ && maxXminYminZ) {
-        const dist = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
-        dimLength.textContent = `Length: ${dist.toFixed(1)}"`;
-        drawLine(lines[0], minXminYminZ, maxXminYminZ);
-      }
-
-      // Height = Y axis
-      if (dimHeight && maxXminYminZ && maxXmaxYminZ) {
-        const dist = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
-        dimHeight.textContent = `Height: ${dist.toFixed(1)}"`;
-        drawLine(lines[1], maxXminYminZ, maxXmaxYminZ);
-      }
-
-      // Breadth = Z axis - fixed to use actual depth
-      if (dimBreadth && maxXmaxYminZ && minXmaxYminZ) {
-        dimBreadth.textContent = `Breadth: ${depth.toFixed(1)}"`;
-        drawLine(lines[2], maxXmaxYminZ, minXmaxYminZ);
+    function stopRendering() {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
       }
     }
 
-    function setupDimensions() {
-      const bbox = product3dViewer.getBoundingBox();
-      const min = bbox.min;
-      const max = bbox.max;
+    function close3dModalFn() {
+      if (product3dModal) product3dModal.classList.remove('active');
+      document.body.classList.remove('folder-open');
+      document.body.style.overflow = '';
+      if (product3dViewer) product3dViewer.src = '';
+      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
+      baseDimensions = null;
+      stopRendering();
+    }
 
-      // 4 corner hotspots for 3 edges
-      product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y-Z', position: `${min.x} ${max.y} ${min.z}` });
+    if (close3dModal) close3dModal.addEventListener('click', close3dModalFn);
 
-      // Label hotspots at edge midpoints
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${(min.x + max.x)/2} ${min.y} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${max.x} ${(min.y + max.y)/2} ${min.z}` });
-      product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${(min.x + max.x)/2} ${max.y} ${min.z}` });
+    if (product3dModal) {
+      product3dModal.addEventListener('click', (e) => {
+        if (e.target === product3dModal) close3dModalFn();
+      });
+    }
 
+    if (arButton && product3dViewer) {
+      arButton.addEventListener('click', () => product3dViewer.activateAR());
+    }
+
+    if (modalQuoteBtn) {
+      modalQuoteBtn.addEventListener('click', () => {
+        window.location.href = `contact.html?product=${encodeURIComponent(currentProductName)}`;
+      });
+    }
+
+    function drawLine(svgLine, p1, p2) {
+      if (!svgLine ||!p1 ||!p2) return;
+      svgLine.setAttribute('x1', p1.x);
+      svgLine.setAttribute('y1', p1.y);
+      svgLine.setAttribute('x2', p2.x);
+      svgLine.setAttribute('y2', p2.y);
+    }
+
+  
+function setupDimensions() {
+  if (!product3dViewer || !dimLines) return;
+
+  const dimensions = product3dViewer.getDimensions();
+  console.log('setupDimensions dims:', dimensions);
+  
+  if (!dimensions || !dimensions.x) {
+    setTimeout(setupDimensions, 200);
+    return;
+  }
+
+  baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
+  const center = product3dViewer.getCameraTarget();
+  if (!center || typeof center.x === 'undefined') {
+    setTimeout(setupDimensions, 200);
+    return;
+  }
+
+  const halfX = dimensions.x * 0.5;
+  const halfY = dimensions.y * 0.5;
+  const halfZ = dimensions.z * 0.5;
+  const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
+  const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
+
+  // Mobile fix: set hotspots twice with delay
+  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+
+  // Double-render to force mobile to catch up
+  setTimeout(() => {
+    product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
+    product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
+    product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
+    product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
+    requestAnimationFrame(renderDimensions);
+  }, 100);
+}
+
+function renderDimensions() {
+  if (!baseDimensions ||!product3dViewer ||!dimLines) return;
+
+  const scale = product3dViewer.scale || { x: 1, y: 1, z: 1 };
+  const scaleX = scale.x || 1;
+  const scaleY = scale.y || 1;
+  const scaleZ = scale.z || 1;
+
+  const lines = dimLines.querySelectorAll('.dimensionLine');
+  const h1 = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
+  const h2 = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
+  const h3 = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
+  const h4 = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
+
+  // Mobile fix: if any hotspot missing, retry next frame instead of dying
+  if (!h1?.canvasPosition ||!h2?.canvasPosition ||!h3?.canvasPosition ||!h4?.canvasPosition) {
+    animationFrameId = requestAnimationFrame(renderDimensions);
+    return;
+  }
+
+  // Length X
+  const c1 = h1.canvasPosition, c2 = h2.canvasPosition;
+  if (dimX && lines[0]) {
+    const lengthIn = (baseDimensions.x * scaleX) * 39.37;
+    dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
+    dimX.style.left = (c1.x + c2.x) / 2 + 'px';
+    dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
+    dimX.classList.remove('hide');
+    drawLine(lines[0], c1, c2);
+  }
+
+  // Height Y
+  const c3 = h3.canvasPosition;
+  if (dimY && lines[1]) {
+    const heightIn = (baseDimensions.y * scaleY) * 39.37;
+    dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
+    dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
+    dimY.style.top = (c2.y + c3.y) / 2 + 'px';
+    dimY.classList.remove('hide');
+    drawLine(lines[1], c2, c3);
+  }
+
+  // Breadth Z
+  const c4 = h4.canvasPosition;
+  if (dimZ && lines[2]) {
+    const breadthIn = (baseDimensions.z * scaleZ) * 39.37;
+    dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
+    dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
+    dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
+    dimZ.classList.remove('hide');
+    drawLine(lines[2], c2, c4);
+  }
+
+  animationFrameId = requestAnimationFrame(renderDimensions);
+}
+if (product3dViewer) {
+  // Mobile needs both 'load' AND 'poster-dismissed' before getDimensions() is valid
+  let modelReady = false;
+  let posterGone = false;
+
+  const trySetupDimensions = () => {
+    if (modelReady && posterGone) {
+      console.log('Mobile ready - setting up dimensions');
+      setTimeout(setupDimensions, 400); // extra delay for mobile GPU
+    }
+  };
+
+  product3dViewer.addEventListener('load', () => {
+    console.log('model-viewer load event');
+    modelReady = true;
+    trySetupDimensions();
+  });
+
+  product3dViewer.addEventListener('poster-dismissed', () => {
+    console.log('poster dismissed');
+    posterGone = true;
+    trySetupDimensions();
+  });
+
+  product3dViewer.addEventListener('camera-change', () => {
+    if (!animationFrameId && baseDimensions) renderDimensions();
+  });
+
+  product3dViewer.addEventListener('ar-status', (event) => {
+    if (event.detail.status === 'session-started') {
+      // AR started - hide dimension overlays, they won't work in AR
+      stopRendering();
+      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+      lines.forEach(l => l.style.display = 'none');
+    } else if (event.detail.status === 'not-presenting') {
+      // Back to 3D view - show dimensions again
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+      lines.forEach(l => l.style.display = '');
       renderDimensions();
     }
+  });
 
-    product3dViewer.addEventListener('load', () => {
-      setTimeout(setupDimensions, 100);
-    });
-
-    product3dViewer.addEventListener('camera-change', renderDimensions);
-
+  product3dViewer.addEventListener('ar-tracking', () => {
+    if (!animationFrameId && baseDimensions) renderDimensions();
+  });
+}
+    // Click folder items to open 3D
     document.querySelectorAll('.folder-item').forEach(item => {
       item.addEventListener('click', function(e) {
         e.preventDefault();
-        const productName = this.getAttribute('data-product-name') || 'Product';
+        const productName = this.getAttribute('data-name') || this.getAttribute('data-product-name') || 'Product';
         const modelUrl = this.getAttribute('data-model') || '';
 
         if (!modelUrl) {
@@ -667,37 +795,25 @@
           return;
         }
 
-        product3dTitle.textContent = productName;
-        product3dViewer.src = modelUrl;
-        product3dModal.classList.add('active');
-        document.body.style.overflow = 'hidden';
+        currentProductName = productName;
+        if (product3dTitle) product3dTitle.textContent = productName;
+        [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
+        baseDimensions = null;
+        stopRendering();
+        if (product3dViewer) product3dViewer.src = modelUrl;
+        if (product3dModal) product3dModal.classList.add('active');
+        document.body.classList.add('folder-open');
       });
     });
 
-    close3dModal.addEventListener('click', () => {
-      product3dModal.classList.remove('active');
-      document.body.style.overflow = '';
-      product3dViewer.src = '';
-    });
+  }); // end DOMContentLoaded
 
-    product3dModal.addEventListener('click', (e) => {
-      if (e.target === product3dModal) {
-        product3dModal.classList.remove('active');
-        document.body.style.overflow = '';
-        product3dViewer.src = '';
-      }
-    });
-
-    arButton.addEventListener('click', () => {
-      product3dViewer.activateAR();
-    });
-
-    if (history.scrollRestoration) {
-      history.scrollRestoration = 'manual';
-    }
-    window.onbeforeunload = function () {
-      window.scrollTo(0, 0);
-    }
+  if (history.scrollRestoration) {
+    history.scrollRestoration = 'manual';
+  }
+  window.onbeforeunload = function () {
+    window.scrollTo(0, 0);
+  }
   </script>
 </body>
 </html>
