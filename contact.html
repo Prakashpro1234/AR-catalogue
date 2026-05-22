@@ -239,5 +239,21 @@
       window.scrollTo(0, 0);
     }
   </script>
+  
+    <script>
+    // Auto-fill message from 3D modal quote button
+    document.addEventListener('DOMContentLoaded', function() {
+      const params = new URLSearchParams(window.location.search);
+      const product = params.get('product');
+      if (product) {
+        const msgBox = document.querySelector('textarea[name="Message"]');
+        if (msgBox) {
+          msgBox.value = `Quote request for: ${product}\n\nPlease share pricing and availability details.`;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
 </body>
 </html>
