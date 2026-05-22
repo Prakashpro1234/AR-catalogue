@@ -864,7 +864,7 @@
       });
     });
 
- // 3D Product Viewer Logic with Dynamic Dimensions
+  // 3D Product Viewer Logic with Dynamic Dimensions
     const product3dModal = document.getElementById('product3dModal');
     const product3dViewer = document.getElementById('product3dViewer');
     const product3dTitle = document.getElementById('product3dTitle');
@@ -875,9 +875,6 @@
     const dimY = document.getElementById('dimY');
     const dimZ = document.getElementById('dimZ');
 
-    let baseDimensions = null;
-    let animationFrameId = null;
-
     function drawLine(svgLine, p1, p2) {
       if (!p1 ||!p2) return;
       svgLine.setAttribute('x1', p1.x);
@@ -887,14 +884,12 @@
     }
 
     function setupDimensions() {
+      // model-viewer 3.3+ uses getDimensions, not getBoundingBox
       const dimensions = product3dViewer.getDimensions();
       if (!dimensions ||!dimensions.x) {
         setTimeout(setupDimensions, 100);
         return;
       }
-
-      // Store base dimensions in meters
-      baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
 
       const center = product3dViewer.getCameraTarget();
       if (!center ||!center.x) {
@@ -909,25 +904,19 @@
       const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
       const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
 
+      // Update invisible hotspot positions
       product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
       product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
 
+      // Wait 2 frames for hotspots to update
       requestAnimationFrame(() => {
         requestAnimationFrame(renderDimensions);
       });
     }
 
     function renderDimensions() {
-      if (!baseDimensions) return;
-
-      // Get current scale - this updates in AR when user pinch-zooms
-      const scale = product3dViewer.scale;
-      const scaleX = scale.x || 1;
-      const scaleY = scale.y || 1;
-      const scaleZ = scale.z || 1;
-
       const lines = dimLines.querySelectorAll('.dimensionLine');
 
       const minXminYminZ = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
@@ -936,26 +925,24 @@
       const maxXminYmaxZ = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
 
       if (!minXminYminZ?.canvasPosition ||!maxXminYminZ?.canvasPosition) {
-        animationFrameId = requestAnimationFrame(renderDimensions);
+        requestAnimationFrame(renderDimensions);
         return;
       }
 
-      // Length - X axis, scaled
+      // Length - X axis
       const c1 = minXminYminZ.canvasPosition;
       const c2 = maxXminYminZ.canvasPosition;
-      const lengthM = baseDimensions.x * scaleX;
-      const lengthIn = lengthM * 39.37;
+      const lengthIn = Math.abs(maxXminYminZ.position.x - minXminYminZ.position.x) * 39.37;
       dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
       dimX.style.left = (c1.x + c2.x) / 2 + 'px';
       dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
       dimX.classList.remove('hide');
       drawLine(lines[0], c1, c2);
 
-      // Height - Y axis, scaled
+      // Height - Y axis
       if (maxXmaxYminZ?.canvasPosition) {
         const c3 = maxXmaxYminZ.canvasPosition;
-        const heightM = baseDimensions.y * scaleY;
-        const heightIn = heightM * 39.37;
+        const heightIn = Math.abs(maxXmaxYminZ.position.y - maxXminYminZ.position.y) * 39.37;
         dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
         dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
         dimY.style.top = (c2.y + c3.y) / 2 + 'px';
@@ -963,26 +950,15 @@
         drawLine(lines[1], c2, c3);
       }
 
-      // Breadth - Z axis, scaled
+      // Breadth - Z axis
       if (maxXminYmaxZ?.canvasPosition) {
         const c4 = maxXminYmaxZ.canvasPosition;
-        const breadthM = baseDimensions.z * scaleZ;
-        const breadthIn = breadthM * 39.37;
+        const breadthIn = Math.abs(maxXminYmaxZ.position.z - maxXminYminZ.position.z) * 39.37;
         dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
         dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
         dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
         dimZ.classList.remove('hide');
         drawLine(lines[2], c2, c4);
-      }
-
-      // Keep rendering to catch AR scale changes
-      animationFrameId = requestAnimationFrame(renderDimensions);
-    }
-
-    function stopRendering() {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
       }
     }
 
@@ -991,17 +967,7 @@
     });
 
     product3dViewer.addEventListener('camera-change', () => {
-      if (!animationFrameId) renderDimensions();
-    });
-
-    // AR specific events - this fixes mobile + scaling
-    product3dViewer.addEventListener('ar-status', (event) => {
-      if (event.detail.status === 'session-started') {
-        // Start continuous render loop in AR
-        renderDimensions();
-      } else if (event.detail.status === 'not-presenting') {
-        stopRendering();
-      }
+      requestAnimationFrame(renderDimensions);
     });
 
     document.querySelectorAll('.folder-item').forEach(item => {
@@ -1017,8 +983,6 @@
 
         product3dTitle.textContent = productName;
         [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
-        baseDimensions = null;
-        stopRendering();
         product3dViewer.src = modelUrl;
         product3dModal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -1029,7 +993,6 @@
       product3dModal.classList.remove('active');
       document.body.style.overflow = '';
       product3dViewer.src = '';
-      stopRendering();
     });
 
     product3dModal.addEventListener('click', (e) => {
@@ -1037,7 +1000,6 @@
         product3dModal.classList.remove('active');
         document.body.style.overflow = '';
         product3dViewer.src = '';
-        stopRendering();
       }
     });
 
@@ -1053,4 +1015,4 @@
     }
   </script>
 </body>
-</html> 
+</html>
