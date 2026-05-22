@@ -16,41 +16,63 @@
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
 
-  <style>
-  /* 3D Dimension Lines */
-.dimensionLineContainer {
+ <style>
+  /* 3D Dimension Lines - Android WebXR */
+  .dimensionLineContainer {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
     z-index: 10;
   }
-.dimensionLine {
+  .dimensionLine {
     stroke: #FFC107;
-    stroke-width: 3;
+    stroke-width: 2;
+    stroke-dasharray: 2;
   }
-.dim {
-    background: rgba(240, 240, 240, 0.95);
+  .dim {
+    background: rgba(255, 193, 7, 0.95);
     color: #000;
     border-radius: 12px;
     border: 1px solid #FFC107;
     padding: 4px 10px;
     font-size: 12px;
     font-weight: 600;
-    transform: translate3d(-50%, -50%, 0);
+    transform: translate(-50%, -50%);
     pointer-events: none;
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     position: absolute;
     white-space: nowrap;
     z-index: 11;
   }
-.hide { display: none; }
-.dot { display: none; }
+  .hide { display: none; }
+  
+  /* CRITICAL FIX: Remove display:none */
+  .dot { 
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
 
- model-viewer {
-   position: relative;
- }
-  </style>
+  #ar-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  model-viewer {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    background-color: #f5f5f5;
+    --poster-color: transparent;
+  }
+</style>
 </head>
 
 <body>
