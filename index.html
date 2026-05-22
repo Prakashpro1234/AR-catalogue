@@ -15,8 +15,99 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,700&display=swap" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
+<style>
+  /* 3D Product Viewer Modal - THIS MAKES IT POP UP */
+  .modal-3d {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 10001;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
 
- <style>
+  .modal-3d.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-3d-content {
+    width: 100%;
+    max-width: 900px;
+    background: var(--white);
+    border-radius: 20px;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-3d.active .modal-3d-content {
+    transform: scale(1);
+  }
+
+  .modal-3d-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 2px solid var(--accent);
+    background: var(--light);
+  }
+
+  .modal-3d-header h3 {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 20px;
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .close-3d-modal {
+    width: 35px;
+    height: 35px;
+    border: none;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.3s;
+  }
+
+  .close-3d-modal:hover {
+    background: var(--accent);
+    transform: rotate(90deg);
+  }
+
+  .modal-3d-body {
+    position: relative;
+  }
+
+  model-viewer {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    background-color: #f5f5f5;
+    --poster-color: transparent;
+  }
+
+  @media (max-width: 576px) {
+    model-viewer {
+      height: 50vh;
+    }
+  }
+
   /* 3D Dimension Lines - Android WebXR */
   .dimensionLineContainer {
     position: absolute;
@@ -25,11 +116,13 @@
     pointer-events: none;
     z-index: 10;
   }
+  
   .dimensionLine {
     stroke: #FFC107;
     stroke-width: 2;
     stroke-dasharray: 2;
   }
+  
   .dim {
     background: rgba(255, 193, 7, 0.95);
     color: #000;
@@ -45,6 +138,7 @@
     white-space: nowrap;
     z-index: 11;
   }
+  
   .hide { display: none; }
   
   /* CRITICAL FIX: Remove display:none */
@@ -63,14 +157,6 @@
     width: 100%;
     height: 100%;
     pointer-events: none;
-  }
-
-  model-viewer {
-    position: relative;
-    width: 100%;
-    height: 60vh;
-    background-color: #f5f5f5;
-    --poster-color: transparent;
   }
 </style>
 </head>
