@@ -16,47 +16,41 @@
   <link href="css/style.css" rel="stylesheet" />
   <link href="css/responsive.css" rel="stylesheet" />
 
- <style>
-  /* 3D Dimension Lines - FIXED */
-  .dimensionLineContainer {
+  <style>
+  /* 3D Dimension Lines */
+.dimensionLineContainer {
     position: absolute;
     top: 0; left: 0;
     width: 100%; height: 100%;
     pointer-events: none;
     z-index: 10;
   }
-  .dimensionLine {
+.dimensionLine {
     stroke: #FFC107;
-    stroke-width: 2;
-    stroke-dasharray: 2;
+    stroke-width: 3;
   }
-  .dim {
-    background: rgba(255, 193, 7, 0.95);
+.dim {
+    background: rgba(240, 240, 240, 0.95);
     color: #000;
     border-radius: 12px;
     border: 1px solid #FFC107;
     padding: 4px 10px;
     font-size: 12px;
     font-weight: 600;
-    transform: translate(-50%, -50%);
+    transform: translate3d(-50%, -50%, 0);
     pointer-events: none;
     box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     position: absolute;
     white-space: nowrap;
     z-index: 11;
   }
-  .hide { display: none !important; }
-  .dot {
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
-  }
-  model-viewer {
-    position: relative;
-  }
-</style>
+.hide { display: none; }
+.dot { display: none; }
+
+ model-viewer {
+   position: relative;
+ }
+  </style>
 </head>
 
 <body>
@@ -531,41 +525,33 @@
         <button class="close-3d" id="close3dModal">×</button>
       </div>
 
-     <model-viewer
-  id="product3dViewer"
-  src=""
-  ar
-  ar-modes="webxr scene-viewer quick-look"
-  camera-controls
-  auto-rotate
-  shadow-intensity="1"
-  exposure="1"
-  environment-image="neutral"
-  alt="3D model"
-  style="position: relative;">
+      <div style="position: relative;">
+        <model-viewer
+          id="product3dViewer"
+          src=""
+          ar
+          ar-modes="webxr scene-viewer quick-look"
+          camera-controls
+          auto-rotate
+          rotation-per-second="30deg"
+          shadow-intensity="1"
+          exposure="1"
+          environment-image="neutral"
+          alt="3D model">
+        </model-viewer>
 
-  <!-- 8 corners -->
-  <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot-X+Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot-X-Y+Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot+X+Y+Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
-  <button slot="hotspot-dot-X+Y+Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <!-- SVG overlay - NOT inside model-viewer -->
+        <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+          <line class="dimensionLine"></line>
+        </svg>
 
-  <!-- 3 dimension labels -->
-  <button slot="hotspot-dim-X" class="dim hide" data-position="0 0 0" data-normal="0 1 0"></button>
-  <button slot="hotspot-dim-Y" class="dim hide" data-position="0 0 0" data-normal="0 1 0"></button>
-  <button slot="hotspot-dim-Z" class="dim hide" data-position="0 0 0" data-normal="0 1 0"></button>
-
-  <!-- 3 lines -->
-  <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
-    <line id="dimLineX" class="dimensionLine hide"></line>
-    <line id="dimLineY" class="dimensionLine hide"></line>
-    <line id="dimLineZ" class="dimensionLine hide"></line>
-  </svg>
-</model-viewer>
+        <!-- Dimension labels - NOT inside model-viewer -->
+        <div class="dim hide" id="dimX"></div>
+        <div class="dim hide" id="dimY"></div>
+        <div class="dim hide" id="dimZ"></div>
+      </div>
 
       <div class="product-3d-actions">
         <a href="contact.html" class="btn-quote">Get Quote</a>
@@ -881,144 +867,141 @@
       });
     });
 
-// 3D Product Viewer Logic - FIXED
-const product3dModal = document.getElementById('product3dModal');
-const product3dViewer = document.getElementById('product3dViewer');
-const product3dTitle = document.getElementById('product3dTitle');
-const close3dModal = document.getElementById('close3dModal');
-const arButton = document.getElementById('arButton');
+    // 3D Product Viewer Logic with Dynamic Dimensions
+    const product3dModal = document.getElementById('product3dModal');
+    const product3dViewer = document.getElementById('product3dViewer');
+    const product3dTitle = document.getElementById('product3dTitle');
+    const close3dModal = document.getElementById('close3dModal');
+    const arButton = document.getElementById('arButton');
+    const dimLines = document.getElementById('dimLines');
+    const dimX = document.getElementById('dimX');
+    const dimY = document.getElementById('dimY');
+    const dimZ = document.getElementById('dimZ');
 
-let currentProductName = '';
-let renderLoopId = null;
-
-function drawLine(svgLine, dot1, dot2) {
-  if (!dot1 || !dot2 || !dot1.canvasPosition || !dot2.canvasPosition) return;
-  svgLine.setAttribute('x1', dot1.canvasPosition.x);
-  svgLine.setAttribute('y1', dot1.canvasPosition.y);
-  svgLine.setAttribute('x2', dot2.canvasPosition.x);
-  svgLine.setAttribute('y2', dot2.canvasPosition.y);
-}
-
-function setupDimensions() {
-  const bbox = product3dViewer.getBoundingBox();
-  const center = bbox.center;
-  const size = bbox.size;
-  const x2 = size.x / 2;
-  const y2 = size.y / 2;
-  const z2 = size.z / 2;
-
-  // Update all 8 corners
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${center.x - x2} ${center.y - y2} ${center.z - z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${center.x + x2} ${center.y - y2} ${center.z - z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${center.x + x2} ${center.y + y2} ${center.z - z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y-Z', position: `${center.x - x2} ${center.y + y2} ${center.z - z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y+Z', position: `${center.x - x2} ${center.y - y2} ${center.z + z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${center.x + x2} ${center.y - y2} ${center.z + z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y+Z', position: `${center.x + x2} ${center.y + y2} ${center.z + z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X+Y+Z', position: `${center.x - x2} ${center.y + y2} ${center.z + z2}` });
-
-  // Update dimension label positions
-  product3dViewer.updateHotspot({ name: 'hotspot-dim-X', position: `${center.x} ${center.y - y2} ${center.z - z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dim-Y', position: `${center.x + x2} ${center.y} ${center.z - z2}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dim-Z', position: `${center.x + x2} ${center.y - y2} ${center.z}` });
-
-  // Show everything
-  document.querySelectorAll('.dim, .dimensionLine').forEach(el => el.classList.remove('hide'));
-  
-  // Set text values in inches
-  const dimX = product3dViewer.querySelector('[slot="hotspot-dim-X"]');
-  const dimY = product3dViewer.querySelector('[slot="hotspot-dim-Y"]');
-  const dimZ = product3dViewer.querySelector('[slot="hotspot-dim-Z"]');
-  
-  if (dimX) dimX.textContent = `${(size.x * 39.37).toFixed(1)}"`;
-  if (dimY) dimY.textContent = `${(size.y * 39.37).toFixed(1)}"`;
-  if (dimZ) dimZ.textContent = `${(size.z * 39.37).toFixed(1)}"`;
-  
-  startRenderLoop();
-}
-
-function renderDimensions() {
-  const dot1 = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-  const dot2 = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-  const dot3 = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-  const dot4 = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
-
-  if (!dot1 || !dot2 || !dot3 || !dot4) return;
-
-  // X-axis line
-  drawLine(document.getElementById('dimLineX'), dot1, dot2);
-  // Y-axis line  
-  drawLine(document.getElementById('dimLineY'), dot2, dot3);
-  // Z-axis line
-  drawLine(document.getElementById('dimLineZ'), dot2, dot4);
-}
-
-function startRenderLoop() {
-  if (renderLoopId) return;
-  function loop() {
-    renderDimensions();
-    renderLoopId = requestAnimationFrame(loop);
-  }
-  renderLoopId = requestAnimationFrame(loop);
-}
-
-function stopRenderLoop() {
-  if (renderLoopId) {
-    cancelAnimationFrame(renderLoopId);
-    renderLoopId = null;
-  }
-}
-
-product3dViewer.addEventListener('load', () => {
-  setTimeout(setupDimensions, 100);
-});
-
-product3dViewer.addEventListener('camera-change', renderDimensions);
-
-document.querySelectorAll('.folder-item').forEach(item => {
-  item.addEventListener('click', function(e) {
-    e.preventDefault();
-    const productName = this.getAttribute('data-product-name') || 'Product';
-    const modelUrl = this.getAttribute('data-model') || '';
-
-    if (!modelUrl) {
-      alert('3D model coming soon for ' + productName);
-      return;
+    function drawLine(svgLine, p1, p2) {
+      if (!p1 ||!p2) return false;
+      svgLine.setAttribute('x1', p1.x);
+      svgLine.setAttribute('y1', p1.y);
+      svgLine.setAttribute('x2', p2.x);
+      svgLine.setAttribute('y2', p2.y);
+      return true;
     }
 
-    // Close folder first
-    document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
-    document.querySelector('.folder-backdrop').classList.remove('active');
+    function updateDimensions() {
+      // model-viewer 3.3+ uses getDimensions, not getBoundingBox
+      const dimensions = product3dViewer.getDimensions();
+      if (!dimensions) {
+        requestAnimationFrame(updateDimensions);
+        return;
+      }
 
-    currentProductName = productName;
-    product3dTitle.textContent = productName;
-    document.querySelectorAll('.dim, .dimensionLine').forEach(el => el.classList.add('hide'));
-    stopRenderLoop();
-    product3dViewer.src = modelUrl;
-    product3dModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  });
-});
+      const center = product3dViewer.getCameraTarget();
+      const half = dimensions.multiplyScalar(0.5);
+      const min = center.sub(half);
+      const max = center.add(half);
 
-close3dModal.addEventListener('click', () => {
-  product3dModal.classList.remove('active');
-  document.body.style.overflow = '';
-  stopRenderLoop();
-  product3dViewer.src = '';
-});
+      // Get 3D positions of corners
+      const p1 = {position: min}; // minX, minY, minZ
+      const p2 = {position: {x: max.x, y: min.y, z: min.z}}; // maxX, minY, minZ
+      const p3 = {position: {x: max.x, y: max.y, z: min.z}}; // maxX, maxY, minZ
+      const p4 = {position: {x: max.x, y: min.y, z: max.z}}; // maxX, minY, maxZ
 
-product3dModal.addEventListener('click', (e) => {
-  if (e.target === product3dModal) {
-    product3dModal.classList.remove('active');
-    document.body.style.overflow = '';
-    stopRenderLoop();
-    product3dViewer.src = '';
-  }
-});
+      // Convert to canvas coords
+      const c1 = product3dViewer.toCanvasPosition(p1.position);
+      const c2 = product3dViewer.toCanvasPosition(p2.position);
+      const c3 = product3dViewer.toCanvasPosition(p3.position);
+      const c4 = product3dViewer.toCanvasPosition(p4.position);
 
-arButton.addEventListener('click', () => {
-  product3dViewer.activateAR();
-});
+      if (!c1 ||!c2) {
+        requestAnimationFrame(updateDimensions);
+        return;
+      }
+
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+
+      // Length - X axis
+      const lengthIn = Math.abs(max.x - min.x) * 39.37;
+      dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
+      dimX.style.left = (c1.x + c2.x) / 2 + 'px';
+      dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
+      dimX.classList.remove('hide');
+      drawLine(lines[0], c1, c2);
+
+      // Height - Y axis
+      if (c3) {
+        const heightIn = Math.abs(max.y - min.y) * 39.37;
+        dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
+        dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
+        dimY.style.top = (c2.y + c3.y) / 2 + 'px';
+        dimY.classList.remove('hide');
+        drawLine(lines[1], c2, c3);
+      }
+
+      // Breadth - Z axis
+      if (c4) {
+        const breadthIn = Math.abs(max.z - min.z) * 39.37;
+        dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
+        dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
+        dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
+        dimZ.classList.remove('hide');
+        drawLine(lines[2], c2, c4);
+      }
+    }
+
+    product3dViewer.addEventListener('load', () => {
+      setTimeout(() => {
+        requestAnimationFrame(updateDimensions);
+      }, 300);
+    });
+
+    product3dViewer.addEventListener('camera-change', () => {
+      requestAnimationFrame(updateDimensions);
+    });
+
+    document.querySelectorAll('.folder-item').forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        const productName = this.getAttribute('data-product-name') || 'Product';
+        const modelUrl = this.getAttribute('data-model') || '';
+
+        if (!modelUrl) {
+          alert('3D model coming soon for ' + productName);
+          return;
+        }
+
+        product3dTitle.textContent = productName;
+        // Hide dims while loading
+        [dimX, dimY, dimZ].forEach(d => d.classList.add('hide'));
+        product3dViewer.src = modelUrl;
+        product3dModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    close3dModal.addEventListener('click', () => {
+      product3dModal.classList.remove('active');
+      document.body.style.overflow = '';
+      product3dViewer.src = '';
+    });
+
+    product3dModal.addEventListener('click', (e) => {
+      if (e.target === product3dModal) {
+        product3dModal.classList.remove('active');
+        document.body.style.overflow = '';
+        product3dViewer.src = '';
+      }
+    });
+
+    arButton.addEventListener('click', () => {
+      product3dViewer.activateAR();
+    });
+
+    if (history.scrollRestoration) {
+      history.scrollRestoration = 'manual';
+    }
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    }
   </script>
 </body>
 </html>
