@@ -584,22 +584,24 @@
     </div>
 
     <div style="position: relative;">
-     <model-viewer
-    id="product3dViewer"
-    src=""
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    ar-placement="floor"
-    ar-scale="fixed"
-    camera-controls
-    auto-rotate
-    rotation-per-second="30deg"
-    shadow-intensity="1"
-    exposure="1"
-    environment-image="neutral"
-    alt="3D model"
-    xr-environment>
-</model-viewer>
+      <model-viewer
+          id="product3dViewer"
+          src=""
+          ar
+          ar-modes="webxr"
+          camera-controls
+          auto-rotate
+          rotation-per-second="30deg"
+          shadow-intensity="1"
+          exposure="1"
+          environment-image="neutral"
+          alt="3D model">
+
+        <button slot="hotspot-dot-X-Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <button slot="hotspot-dot+X-Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <button slot="hotspot-dot+X+Y-Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+        <button slot="hotspot-dot+X-Y+Z" class="dot" data-position="0 0 0" data-normal="0 0 0"></button>
+      </model-viewer>
 
       <svg id="dimLines" width="100%" height="100%" class="dimensionLineContainer">
         <line class="dimensionLine"></line>
@@ -1137,33 +1139,19 @@ if (product3dViewer) {
   });
 
   product3dViewer.addEventListener('ar-status', (event) => {
-  if (event.detail.status === 'session-started') {
-    // AR started - hide dimension overlays, lock Y to 0
-    stopRendering();
-    [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
-    const lines = dimLines.querySelectorAll('.dimensionLine');
-    lines.forEach(l => l.style.display = 'none');
-    
-    // CRITICAL: Force model to floor every frame for first 3 seconds
-    let lockFrames = 0;
-    const lockToFloor = () => {
-      if (lockFrames < 180) { // 3 sec @ 60fps
-        product3dViewer.modelOrientation = `0deg 0deg 0deg`;
-        product3dViewer.cameraTarget = `0m 0m 0m`;
-        product3dViewer.jumpCameraToGoal();
-        lockFrames++;
-        requestAnimationFrame(lockToFloor);
-      }
-    };
-    lockToFloor();
-    
-  } else if (event.detail.status === 'not-presenting') {
-    // Back to 3D view - show dimensions again
-    const lines = dimLines.querySelectorAll('.dimensionLine');
-    lines.forEach(l => l.style.display = '');
-    renderDimensions();
-  }
-});
+    if (event.detail.status === 'session-started') {
+      // AR started - hide dimension overlays, they won't work in AR
+      stopRendering();
+      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+      lines.forEach(l => l.style.display = 'none');
+    } else if (event.detail.status === 'not-presenting') {
+      // Back to 3D view - show dimensions again
+      const lines = dimLines.querySelectorAll('.dimensionLine');
+      lines.forEach(l => l.style.display = '');
+      renderDimensions();
+    }
+  });
 
   product3dViewer.addEventListener('ar-tracking', () => {
     if (!animationFrameId && baseDimensions) renderDimensions();
@@ -1202,4 +1190,4 @@ if (product3dViewer) {
   }
 </script>
 </body>
-</html>
+</html> 
