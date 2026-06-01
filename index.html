@@ -623,6 +623,20 @@
 <!-- end 3D Product Viewer Modal -->
  <!-- end 3D Product Viewer Modal -->
 
+  <!-- WebXR Multi-Model AR Modal -->
+<div class="product-3d-modal" id="webxrModal">
+  <div class="product-3d-container">
+    <div class="product-3d-header">
+      <h3 id="webxrTitle">AR Scene Builder</h3>
+      <button class="close-3d" id="closeWebxrModal">×</button>
+    </div>
+    <div id="webxrContainer" style="width:100%; height:60vh; position:relative;"></div>
+    <div class="product-3d-actions">
+      <button class="btn-quote" id="webxrAddBtn">Add Selected Model</button>
+      <button class="btn-ar" id="webxrStartAR">Start AR</button>
+    </div>
+  </div>
+</div>
   
   <!-- discount section -->
   <section class="discount_section layout_padding">
@@ -864,10 +878,148 @@
 <script src="js/jquery-3.4.1.min.js"></script>
 <script src="js/bootstrap.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.2.1/owl.carousel.min.js"></script>
-<!-- Google Model Viewer -->
+<!-- Google Model Viewer - keep for 3D preview only -->
 <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
 
-<script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { ARButton } from 'three/addons/webxr/ARButton.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// ===== WEBXR GLOBALS =====
+let camera, scene, renderer;
+let controller, reticle;
+let hitTestSource = null;
+let hitTestSourceRequested = false;
+let placedModels = [];
+let currentModelToPlace = null;
+const loader = new GLTFLoader();
+
+const webxrModal = document.getElementById('webxrModal');
+const webxrContainer = document.getElementById('webxrContainer');
+const webxrStartAR = document.getElementById('webxrStartAR');
+const webxrAddBtn = document.getElementById('webxrAddBtn');
+const closeWebxrModal = document.getElementById('closeWebxrModal');
+const webxrTitle = document.getElementById('webxrTitle');
+
+function initWebXR() {
+  webxrContainer.innerHTML = '';
+  placedModels = [];
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, webxrContainer.clientWidth / webxrContainer.clientHeight, 0.01, 20);
+
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(webxrContainer.clientWidth, webxrContainer.clientHeight);
+  renderer.xr.enabled = true;
+  webxrContainer.appendChild(renderer.domElement);
+
+  const arButton = ARButton.createButton(renderer, { requiredFeatures: ['hit-test'] });
+  arButton.style.display = 'none';
+  document.body.appendChild(arButton);
+  webxrStartAR.onclick = () => arButton.click();
+
+  const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+  light.position.set(0.5, 1, 0.25);
+  scene.add(light);
+
+  reticle = new THREE.Mesh(
+    new THREE.RingGeometry(0.15, 0.2, 32).rotateX(-Math.PI / 2),
+    new THREE.MeshBasicMaterial({ color: 0xFFC107 })
+  );
+  reticle.matrixAutoUpdate = false;
+  reticle.visible = false;
+  scene.add(reticle);
+
+  controller = renderer.xr.getController(0);
+  controller.addEventListener('select', onSelect);
+  scene.add(controller);
+
+  renderer.setAnimationLoop(render);
+}
+
+function onSelect() {
+  if (reticle.visible && currentModelToPlace) {
+    loader.load(currentModelToPlace.url, (gltf) => {
+      const model = gltf.scene;
+      model.position.setFromMatrixPosition(reticle.matrix);
+      model.quaternion.setFromRotationMatrix(reticle.matrix);
+      model.scale.set(1, 1, 1);
+      scene.add(model);
+      placedModels.push(model);
+      webxrTitle.textContent = `Placed ${currentModelToPlace.name}. Add another?`;
+      currentModelToPlace = null;
+    });
+  }
+}
+
+function render(timestamp, frame) {
+  if (frame) {
+    const referenceSpace = renderer.xr.getReferenceSpace();
+    const session = renderer.xr.getSession();
+
+    if (hitTestSourceRequested === false) {
+      session.requestReferenceSpace('viewer').then((refSpace) => {
+        session.requestHitTestSource({ space: refSpace }).then((source) => {
+          hitTestSource = source;
+        });
+      });
+      session.addEventListener('end', () => {
+        hitTestSourceRequested = false;
+        hitTestSource = null;
+      });
+      hitTestSourceRequested = true;
+    }
+
+    if (hitTestSource) {
+      const hitTestResults = frame.getHitTestResults(hitTestSource);
+      if (hitTestResults.length) {
+        const hit = hitTestResults[0];
+        reticle.visible = true;
+        reticle.matrix.fromArray(hit.getPose(referenceSpace).transform.matrix);
+      } else {
+        reticle.visible = false;
+      }
+    }
+  }
+  renderer.render(scene, camera);
+}
+
+if (closeWebxrModal) {
+  closeWebxrModal.onclick = () => {
+    webxrModal.classList.remove('active');
+    document.body.classList.remove('folder-open');
+    if (renderer) renderer.setAnimationLoop(null);
+  };
+}
+
+if (webxrAddBtn) {
+  webxrAddBtn.onclick = () => {
+    webxrModal.classList.remove('active');
+    alert('Now click another product from the folder to add it to the AR scene');
+  };
+}
+
+window.addEventListener('resize', () => {
+  if (camera && renderer && webxrContainer) {
+    camera.aspect = webxrContainer.clientWidth / webxrContainer.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(webxrContainer.clientWidth, webxrContainer.clientHeight);
+  }
+});
+
+// ===== REGULAR SITE JS =====
+document.addEventListener('DOMContentLoaded', function() {
   // Owl Carousel init
   $(".owl-carousel").owlCarousel({
     loop: true,
@@ -883,311 +1035,113 @@
     }
   });
 
-  // Run after DOM loads
-  document.addEventListener('DOMContentLoaded', function() {
-    // Slide menu toggle
-    const menuToggle = document.getElementById('menuToggle');
-    const slideMenu = document.getElementById('slideMenu');
-    const menuOverlay = document.getElementById('menuOverlay');
+  // Slide menu toggle
+  const menuToggle = document.getElementById('menuToggle');
+  const slideMenu = document.getElementById('slideMenu');
+  const menuOverlay = document.getElementById('menuOverlay');
 
-    function toggleMenu() {
-      if (!menuToggle ||!slideMenu) return;
-      menuToggle.classList.toggle('active');
-      slideMenu.classList.toggle('active');
-      document.body.style.overflow = slideMenu.classList.contains('active')? 'hidden' : '';
-    }
+  function toggleMenu() {
+    if (!menuToggle || !slideMenu) return;
+    menuToggle.classList.toggle('active');
+    slideMenu.classList.toggle('active');
+    document.body.style.overflow = slideMenu.classList.contains('active') ? 'hidden' : '';
+  }
 
-    if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
-    if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
+  if (menuToggle) menuToggle.addEventListener('click', toggleMenu);
+  if (menuOverlay) menuOverlay.addEventListener('click', toggleMenu);
 
-    document.querySelectorAll('.slide-menu.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        if (menuToggle) menuToggle.classList.remove('active');
-        if (slideMenu) slideMenu.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    });
-
-    // Search form
-    const searchForm = document.getElementById('searchForm');
-    if (searchForm) {
-      searchForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-        if (searchTerm) {
-          window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
-        }
-      });
-    }
-
-    // Android Folder System
-    const folders = document.querySelectorAll('.folder-box');
-    const backdrop = document.querySelector('.folder-backdrop');
-
-    folders.forEach(folder => {
-      const preview = folder.querySelector('.folder-preview');
-      const closeBtn = folder.querySelector('.close-folder');
-
-      if (preview) {
-        preview.addEventListener('click', () => {
-          folder.classList.add('active');
-          if (backdrop) backdrop.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        });
-      }
-
-      if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-          folder.classList.remove('active');
-          if (backdrop) backdrop.classList.remove('active');
-          document.body.style.overflow = '';
-        });
-      }
-    });
-
-    if (backdrop) {
-      backdrop.addEventListener('click', () => {
-        document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
-        backdrop.classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    }
-
- // 3D Product Viewer Logic - FIXED
-    const product3dModal = document.getElementById('product3dModal');
-    const product3dViewer = document.getElementById('product3dViewer');
-    const product3dTitle = document.getElementById('product3dTitle');
-    const close3dModal = document.getElementById('close3dModal');
-    const arButton = document.getElementById('arButton');
-    const modalQuoteBtn = document.getElementById('modalQuoteBtn');
-
-    // Dimension elements - fixed: use document not viewer
-    const dimLines = document.getElementById('dimLines');
-    const dimX = document.getElementById('dimX');
-    const dimY = document.getElementById('dimY');
-    const dimZ = document.getElementById('dimZ');
-
-    let currentProductName = '';
-    let animationFrameId = null;
-    let baseDimensions = null;
-
-    function stopRendering() {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-      }
-    }
-
-    function close3dModalFn() {
-      if (product3dModal) product3dModal.classList.remove('active');
-      document.body.classList.remove('folder-open');
+  document.querySelectorAll('.slide-menu .nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      if (menuToggle) menuToggle.classList.remove('active');
+      if (slideMenu) slideMenu.classList.remove('active');
       document.body.style.overflow = '';
-      if (product3dViewer) product3dViewer.src = '';
-      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
-      baseDimensions = null;
-      stopRendering();
-    }
-
-    if (close3dModal) close3dModal.addEventListener('click', close3dModalFn);
-
-    if (product3dModal) {
-      product3dModal.addEventListener('click', (e) => {
-        if (e.target === product3dModal) close3dModalFn();
-      });
-    }
-
-    if (arButton && product3dViewer) {
-      arButton.addEventListener('click', () => product3dViewer.activateAR());
-    }
-
-    if (modalQuoteBtn) {
-      modalQuoteBtn.addEventListener('click', () => {
-        window.location.href = `contact.html?product=${encodeURIComponent(currentProductName)}`;
-      });
-    }
-
-    function drawLine(svgLine, p1, p2) {
-      if (!svgLine ||!p1 ||!p2) return;
-      svgLine.setAttribute('x1', p1.x);
-      svgLine.setAttribute('y1', p1.y);
-      svgLine.setAttribute('x2', p2.x);
-      svgLine.setAttribute('y2', p2.y);
-    }
-
-  
-function setupDimensions() {
-  if (!product3dViewer || !dimLines) return;
-
-  const dimensions = product3dViewer.getDimensions();
-  console.log('setupDimensions dims:', dimensions);
-  
-  if (!dimensions || !dimensions.x) {
-    setTimeout(setupDimensions, 200);
-    return;
-  }
-
-  baseDimensions = { x: dimensions.x, y: dimensions.y, z: dimensions.z };
-  const center = product3dViewer.getCameraTarget();
-  if (!center || typeof center.x === 'undefined') {
-    setTimeout(setupDimensions, 200);
-    return;
-  }
-
-  const halfX = dimensions.x * 0.5;
-  const halfY = dimensions.y * 0.5;
-  const halfZ = dimensions.z * 0.5;
-  const min = { x: center.x - halfX, y: center.y - halfY, z: center.z - halfZ };
-  const max = { x: center.x + halfX, y: center.y + halfY, z: center.z + halfZ };
-
-  // Mobile fix: set hotspots twice with delay
-  product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
-  product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
-
-  // Double-render to force mobile to catch up
-  setTimeout(() => {
-    product3dViewer.updateHotspot({ name: 'hotspot-dot-X-Y-Z', position: `${min.x} ${min.y} ${min.z}` });
-    product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y-Z', position: `${max.x} ${min.y} ${min.z}` });
-    product3dViewer.updateHotspot({ name: 'hotspot-dot+X+Y-Z', position: `${max.x} ${max.y} ${min.z}` });
-    product3dViewer.updateHotspot({ name: 'hotspot-dot+X-Y+Z', position: `${max.x} ${min.y} ${max.z}` });
-    requestAnimationFrame(renderDimensions);
-  }, 100);
-}
-
-function renderDimensions() {
-  if (!baseDimensions ||!product3dViewer ||!dimLines) return;
-
-  const scale = product3dViewer.scale || { x: 1, y: 1, z: 1 };
-  const scaleX = scale.x || 1;
-  const scaleY = scale.y || 1;
-  const scaleZ = scale.z || 1;
-
-  const lines = dimLines.querySelectorAll('.dimensionLine');
-  const h1 = product3dViewer.queryHotspot('hotspot-dot-X-Y-Z');
-  const h2 = product3dViewer.queryHotspot('hotspot-dot+X-Y-Z');
-  const h3 = product3dViewer.queryHotspot('hotspot-dot+X+Y-Z');
-  const h4 = product3dViewer.queryHotspot('hotspot-dot+X-Y+Z');
-
-  // Mobile fix: if any hotspot missing, retry next frame instead of dying
-  if (!h1?.canvasPosition ||!h2?.canvasPosition ||!h3?.canvasPosition ||!h4?.canvasPosition) {
-    animationFrameId = requestAnimationFrame(renderDimensions);
-    return;
-  }
-
-  // Length X
-  const c1 = h1.canvasPosition, c2 = h2.canvasPosition;
-  if (dimX && lines[0]) {
-    const lengthIn = (baseDimensions.x * scaleX) * 39.37;
-    dimX.textContent = `Length: ${lengthIn.toFixed(1)}"`;
-    dimX.style.left = (c1.x + c2.x) / 2 + 'px';
-    dimX.style.top = (c1.y + c2.y) / 2 - 15 + 'px';
-    dimX.classList.remove('hide');
-    drawLine(lines[0], c1, c2);
-  }
-
-  // Height Y
-  const c3 = h3.canvasPosition;
-  if (dimY && lines[1]) {
-    const heightIn = (baseDimensions.y * scaleY) * 39.37;
-    dimY.textContent = `Height: ${heightIn.toFixed(1)}"`;
-    dimY.style.left = (c2.x + c3.x) / 2 + 15 + 'px';
-    dimY.style.top = (c2.y + c3.y) / 2 + 'px';
-    dimY.classList.remove('hide');
-    drawLine(lines[1], c2, c3);
-  }
-
-  // Breadth Z
-  const c4 = h4.canvasPosition;
-  if (dimZ && lines[2]) {
-    const breadthIn = (baseDimensions.z * scaleZ) * 39.37;
-    dimZ.textContent = `Breadth: ${breadthIn.toFixed(1)}"`;
-    dimZ.style.left = (c2.x + c4.x) / 2 + 15 + 'px';
-    dimZ.style.top = (c2.y + c4.y) / 2 + 'px';
-    dimZ.classList.remove('hide');
-    drawLine(lines[2], c2, c4);
-  }
-
-  animationFrameId = requestAnimationFrame(renderDimensions);
-}
-if (product3dViewer) {
-  // Mobile needs both 'load' AND 'poster-dismissed' before getDimensions() is valid
-  let modelReady = false;
-  let posterGone = false;
-
-  const trySetupDimensions = () => {
-    if (modelReady && posterGone) {
-      console.log('Mobile ready - setting up dimensions');
-      setTimeout(setupDimensions, 400); // extra delay for mobile GPU
-    }
-  };
-
-  product3dViewer.addEventListener('load', () => {
-    console.log('model-viewer load event');
-    modelReady = true;
-    trySetupDimensions();
-  });
-
-  product3dViewer.addEventListener('poster-dismissed', () => {
-    console.log('poster dismissed');
-    posterGone = true;
-    trySetupDimensions();
-  });
-
-  product3dViewer.addEventListener('camera-change', () => {
-    if (!animationFrameId && baseDimensions) renderDimensions();
-  });
-
-  product3dViewer.addEventListener('ar-status', (event) => {
-    if (event.detail.status === 'session-started') {
-      // AR started - hide dimension overlays, they won't work in AR
-      stopRendering();
-      [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
-      const lines = dimLines.querySelectorAll('.dimensionLine');
-      lines.forEach(l => l.style.display = 'none');
-    } else if (event.detail.status === 'not-presenting') {
-      // Back to 3D view - show dimensions again
-      const lines = dimLines.querySelectorAll('.dimensionLine');
-      lines.forEach(l => l.style.display = '');
-      renderDimensions();
-    }
-  });
-
-  product3dViewer.addEventListener('ar-tracking', () => {
-    if (!animationFrameId && baseDimensions) renderDimensions();
-  });
-}
-    // Click folder items to open 3D
-    document.querySelectorAll('.folder-item').forEach(item => {
-      item.addEventListener('click', function(e) {
-        e.preventDefault();
-        const productName = this.getAttribute('data-name') || this.getAttribute('data-product-name') || 'Product';
-        const modelUrl = this.getAttribute('data-model') || '';
-
-        if (!modelUrl) {
-          alert('3D model coming soon for ' + productName);
-          return;
-        }
-
-        currentProductName = productName;
-        if (product3dTitle) product3dTitle.textContent = productName;
-        [dimX, dimY, dimZ].forEach(d => { if (d) d.classList.add('hide'); });
-        baseDimensions = null;
-        stopRendering();
-        if (product3dViewer) product3dViewer.src = modelUrl;
-        if (product3dModal) product3dModal.classList.add('active');
-        document.body.classList.add('folder-open');
-      });
     });
+  });
 
-  }); // end DOMContentLoaded
+  // Search form
+  const searchForm = document.getElementById('searchForm');
+  if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+      if (searchTerm) {
+        window.location.href = 'furniture.html?search=' + encodeURIComponent(searchTerm);
+      }
+    });
+  }
 
-  if (history.scrollRestoration) {
-    history.scrollRestoration = 'manual';
+  // Folder System
+  const folders = document.querySelectorAll('.folder-box');
+  const backdrop = document.querySelector('.folder-backdrop');
+
+  folders.forEach(folder => {
+    const preview = folder.querySelector('.folder-preview');
+    const closeBtn = folder.querySelector('.close-folder');
+
+    if (preview) {
+      preview.addEventListener('click', () => {
+        folder.classList.add('active');
+        if (backdrop) backdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        folder.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      document.querySelectorAll('.folder-box.active').forEach(f => f.classList.remove('active'));
+      backdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    });
   }
-  window.onbeforeunload = function () {
-    window.scrollTo(0, 0);
+
+  // Click folder items to open WebXR AR for stacking
+  document.querySelectorAll('.folder-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const modelUrl = this.getAttribute('data-model');
+      const productName = this.getAttribute('data-product-name') || 'Product';
+
+      if (!modelUrl) {
+        alert('3D model coming soon for ' + productName);
+        return;
+      }
+
+      currentModelToPlace = { url: modelUrl, name: productName };
+      webxrTitle.textContent = `Tap to place: ${productName}`;
+      webxrModal.classList.add('active');
+      document.body.classList.add('folder-open');
+      initWebXR();
+    });
+  });
+
+  // Old model-viewer Quote button - keep if you want 3D preview
+  const modalQuoteBtn = document.getElementById('modalQuoteBtn');
+  if (modalQuoteBtn) {
+    modalQuoteBtn.addEventListener('click', () => {
+      const product3dTitle = document.getElementById('product3dTitle');
+      const name = product3dTitle ? product3dTitle.textContent : 'Product';
+      window.location.href = `contact.html?product=${encodeURIComponent(name)}`;
+    });
   }
+
+}); // end DOMContentLoaded
+
+if (history.scrollRestoration) {
+  history.scrollRestoration = 'manual';
+}
+window.onbeforeunload = function () {
+  window.scrollTo(0, 0);
+}
 </script>
 </body>
 </html> 
